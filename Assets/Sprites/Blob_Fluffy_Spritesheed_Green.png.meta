@@ -1,0 +1,552 @@
+fileFormatVersion: 2
+guid: 51c08f686150bd54ab66626dcce25934
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2561362782973121984
+    second: Blob_Fluffy_Spritesheed_Green_0
+  - first:
+      213: 8134466710140879381
+    second: Blob_Fluffy_Spritesheed_Green_1
+  - first:
+      213: -206141433263036881
+    second: Blob_Fluffy_Spritesheed_Green_2
+  - first:
+      213: -8324237580339084292
+    second: Blob_Fluffy_Spritesheed_Green_3
+  - first:
+      213: -6752798180885070847
+    second: Blob_Fluffy_Spritesheed_Green_4
+  - first:
+      213: -3474838618838624136
+    second: Blob_Fluffy_Spritesheed_Green_5
+  - first:
+      213: 8087032813483342759
+    second: Blob_Fluffy_Spritesheed_Green_6
+  - first:
+      213: 6043791769532989278
+    second: Blob_Fluffy_Spritesheed_Green_7
+  - first:
+      213: 4224407927327630924
+    second: Blob_Fluffy_Spritesheed_Green_8
+  - first:
+      213: 2197254082590575543
+    second: Blob_Fluffy_Spritesheed_Green_9
+  - first:
+      213: 5887057343337159511
+    second: Blob_Fluffy_Spritesheed_Green_10
+  - first:
+      213: 1318072643876894949
+    second: Blob_Fluffy_Spritesheed_Green_11
+  - first:
+      213: -5444193468658879537
+    second: Blob_Fluffy_Spritesheed_Green_12
+  - first:
+      213: 4799999498913121008
+    second: Blob_Fluffy_Spritesheed_Green_13
+  - first:
+      213: 9118406573452413709
+    second: Blob_Fluffy_Spritesheed_Green_14
+  - first:
+      213: -5309216069013025402
+    second: Blob_Fluffy_Spritesheed_Green_15
+  - first:
+      213: 6533441988722275255
+    second: Blob_Fluffy_Spritesheed_Green_16
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 3079
+        width: 465
+        height: 396
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c5d40461e9cb8320800000000000000
+      internalID: 2561362782973121984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_1
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 3079
+        width: 477
+        height: 396
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5120037ef5e63e070800000000000000
+      internalID: 8134466710140879381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_2
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 3079
+        width: 467
+        height: 386
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f26edd86573a32df0800000000000000
+      internalID: -206141433263036881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_3
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 2055
+        width: 465
+        height: 396
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf38eed360e5a7c80800000000000000
+      internalID: -8324237580339084292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_4
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 2055
+        width: 461
+        height: 468
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10cf07415dd3942a0800000000000000
+      internalID: -6752798180885070847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_5
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 2055
+        width: 485
+        height: 482
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8789058cfa4e6cfc0800000000000000
+      internalID: -3474838618838624136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_6
+      rect:
+        serializedVersion: 2
+        x: 1549
+        y: 2055
+        width: 478
+        height: 348
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ab3a963f79ea3070800000000000000
+      internalID: 8087032813483342759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_7
+      rect:
+        serializedVersion: 2
+        x: 2061
+        y: 2055
+        width: 478
+        height: 348
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5f717fc79cdfd350800000000000000
+      internalID: 6043791769532989278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_8
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 1031
+        width: 465
+        height: 396
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4625b6c0ac10aa30800000000000000
+      internalID: 4224407927327630924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_9
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 1031
+        width: 461
+        height: 468
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bb861252f63e7e10800000000000000
+      internalID: 2197254082590575543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_10
+      rect:
+        serializedVersion: 2
+        x: 1055
+        y: 1221
+        width: 444
+        height: 416
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75b57f9767703b150800000000000000
+      internalID: 5887057343337159511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_11
+      rect:
+        serializedVersion: 2
+        x: 1549
+        y: 1031
+        width: 478
+        height: 348
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e8317e061cba4210800000000000000
+      internalID: 1318072643876894949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_12
+      rect:
+        serializedVersion: 2
+        x: 1162
+        y: 1021
+        width: 251
+        height: 153
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc3f51482e65274b0800000000000000
+      internalID: -5444193468658879537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_13
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 7
+        width: 465
+        height: 396
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f205cedc160d9240800000000000000
+      internalID: 4799999498913121008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_14
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 7
+        width: 478
+        height: 348
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0bc73897761b8e70800000000000000
+      internalID: 9118406573452413709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_15
+      rect:
+        serializedVersion: 2
+        x: 1023
+        y: 7
+        width: 502
+        height: 322
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68dceaa5d10e156b0800000000000000
+      internalID: -5309216069013025402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Blob_Fluffy_Spritesheed_Green_16
+      rect:
+        serializedVersion: 2
+        x: 1549
+        y: 7
+        width: 478
+        height: 348
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b3b9628fd27baa50800000000000000
+      internalID: 6533441988722275255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

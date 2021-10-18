@@ -182,7 +182,7 @@ public class PlayerController : MonoBehaviour
                 winTile2.transform.GetChild(1).GetComponent<ParticleSystem>().Stop();   //Stop Particle System
                 FindObjectOfType<GameController>().GameOver();
             }
-            groundTilemap.SetTile(groundTilemap.WorldToCell(originalPosition), null);//remove tile of character last position
+            groundTilemap.SetTile(groundTilemap.WorldToCell(originalPosition), null);   //remove tile of character last position
         }
 
         animator.SetBool("isJumping", false);    //Stop Jump Animation

@@ -23,7 +23,6 @@ public class GameController : MonoBehaviour
 
     [HideInInspector]
     public bool isLevelCompleted = false;
-    //private float restartDelay = 1.5f;
 
     void Awake()
     {
@@ -95,8 +94,10 @@ public class GameController : MonoBehaviour
         player1Clone.transform.position = setOfPlayer1Player2.transform.position + player1CloneIntialPosition;
         player2Clone.transform.position = setOfPlayer1Player2.transform.position + player2CloneIntialPosition;
         heart.transform.position = setOfPlayer1Player2.transform.position + HeartAnimationInitialPosition;
+
         if (!setOfPlayer1Player2.activeInHierarchy)
         {
+            //Make invisible to original and visible to clone
             setOfPlayer1Player2.SetActive(true);
             StartCoroutine(HeartAnimationAppear());
             player1Clone.GetComponent<SpriteRenderer>().flipX = player1.GetComponent<SpriteRenderer>().flipX;
@@ -113,6 +114,8 @@ public class GameController : MonoBehaviour
         if (setOfPlayer1Player2.activeInHierarchy)
         {
             setOfPlayer1Player2.SetActive(false);
+
+            //Set visible to orginal players
             player1.transform.GetChild(0).gameObject.SetActive(true);
             player1.GetComponent<SpriteRenderer>().enabled = true;
             player2.transform.GetChild(0).gameObject.SetActive(true);
@@ -137,8 +140,8 @@ public class GameController : MonoBehaviour
 
     private IEnumerator HeartAnimationAppear()
     {
-        heart.gameObject.SetActive(true);
+        heart.SetActive(true);
         yield return new WaitForSeconds(heartAnimationDelay);
-        heart.gameObject.SetActive(false);
+        heart.SetActive(false);
     }
 }

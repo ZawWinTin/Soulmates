@@ -54,7 +54,7 @@ TextureImporter:
       213: 4447950685138667561
     second: Blob_Fluffy_Spritesheed_Red_16
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -75,6 +75,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -113,6 +114,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -164,6 +166,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -544,6 +558,24 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Blob_Fluffy_Spritesheed_Red_0: -7713411395937330846
+      Blob_Fluffy_Spritesheed_Red_1: 2237979201592432075
+      Blob_Fluffy_Spritesheed_Red_10: -542546305709158201
+      Blob_Fluffy_Spritesheed_Red_11: -8528777699593142043
+      Blob_Fluffy_Spritesheed_Red_12: -37731100438712455
+      Blob_Fluffy_Spritesheed_Red_13: 5558509662951084761
+      Blob_Fluffy_Spritesheed_Red_14: -4786131200113368110
+      Blob_Fluffy_Spritesheed_Red_15: 1095807086031544445
+      Blob_Fluffy_Spritesheed_Red_16: 4447950685138667561
+      Blob_Fluffy_Spritesheed_Red_2: 2961494569751037731
+      Blob_Fluffy_Spritesheed_Red_3: 5795736575671075312
+      Blob_Fluffy_Spritesheed_Red_4: 7180146817313243530
+      Blob_Fluffy_Spritesheed_Red_5: 6399854505484377201
+      Blob_Fluffy_Spritesheed_Red_6: 3025151946184184553
+      Blob_Fluffy_Spritesheed_Red_7: 1336382020756654117
+      Blob_Fluffy_Spritesheed_Red_8: 619839185128979416
+      Blob_Fluffy_Spritesheed_Red_9: -6925251997739519266
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

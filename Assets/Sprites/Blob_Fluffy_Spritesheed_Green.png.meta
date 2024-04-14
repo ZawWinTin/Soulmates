@@ -54,7 +54,7 @@ TextureImporter:
       213: 6533441988722275255
     second: Blob_Fluffy_Spritesheed_Green_16
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -75,6 +75,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -113,6 +114,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -164,6 +166,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -544,6 +558,24 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Blob_Fluffy_Spritesheed_Green_0: 2561362782973121984
+      Blob_Fluffy_Spritesheed_Green_1: 8134466710140879381
+      Blob_Fluffy_Spritesheed_Green_10: 5887057343337159511
+      Blob_Fluffy_Spritesheed_Green_11: 1318072643876894949
+      Blob_Fluffy_Spritesheed_Green_12: -5444193468658879537
+      Blob_Fluffy_Spritesheed_Green_13: 4799999498913121008
+      Blob_Fluffy_Spritesheed_Green_14: 9118406573452413709
+      Blob_Fluffy_Spritesheed_Green_15: -5309216069013025402
+      Blob_Fluffy_Spritesheed_Green_16: 6533441988722275255
+      Blob_Fluffy_Spritesheed_Green_2: -206141433263036881
+      Blob_Fluffy_Spritesheed_Green_3: -8324237580339084292
+      Blob_Fluffy_Spritesheed_Green_4: -6752798180885070847
+      Blob_Fluffy_Spritesheed_Green_5: -3474838618838624136
+      Blob_Fluffy_Spritesheed_Green_6: 8087032813483342759
+      Blob_Fluffy_Spritesheed_Green_7: 6043791769532989278
+      Blob_Fluffy_Spritesheed_Green_8: 4224407927327630924
+      Blob_Fluffy_Spritesheed_Green_9: 2197254082590575543
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

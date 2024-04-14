@@ -153,7 +153,7 @@ TextureImporter:
       213: 1056813830710588669
     second: Grass-Spritesheet_Blocks_49
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -174,6 +174,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -212,6 +213,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -263,6 +265,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -1336,6 +1350,57 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Grass-Spritesheet_Blocks_0: 4928792004452207601
+      Grass-Spritesheet_Blocks_1: 3032992306048746688
+      Grass-Spritesheet_Blocks_10: -806846165232961634
+      Grass-Spritesheet_Blocks_11: 4513562605157404880
+      Grass-Spritesheet_Blocks_12: 1607220320969584331
+      Grass-Spritesheet_Blocks_13: -4778843437970243127
+      Grass-Spritesheet_Blocks_14: -846564618090486866
+      Grass-Spritesheet_Blocks_15: 8832169695973136872
+      Grass-Spritesheet_Blocks_16: 5158558540889278303
+      Grass-Spritesheet_Blocks_17: -2864041225926177967
+      Grass-Spritesheet_Blocks_18: 4676583850320520003
+      Grass-Spritesheet_Blocks_19: -3412669935189693267
+      Grass-Spritesheet_Blocks_2: -3006024253139060873
+      Grass-Spritesheet_Blocks_20: -5173127479531158767
+      Grass-Spritesheet_Blocks_21: -3112587424505894200
+      Grass-Spritesheet_Blocks_22: -1245012279723727788
+      Grass-Spritesheet_Blocks_23: 8696590549638336851
+      Grass-Spritesheet_Blocks_24: 8628541141760807361
+      Grass-Spritesheet_Blocks_25: -4417865029418518871
+      Grass-Spritesheet_Blocks_26: 2964819765223735674
+      Grass-Spritesheet_Blocks_27: 5433513453303199009
+      Grass-Spritesheet_Blocks_28: 6875469703109486720
+      Grass-Spritesheet_Blocks_29: -5402597117761244671
+      Grass-Spritesheet_Blocks_3: -1483828612704261249
+      Grass-Spritesheet_Blocks_30: -5213757524678568784
+      Grass-Spritesheet_Blocks_31: -6064032237329814999
+      Grass-Spritesheet_Blocks_32: -40512109241024336
+      Grass-Spritesheet_Blocks_33: -4288333372251407919
+      Grass-Spritesheet_Blocks_34: 483474927173919471
+      Grass-Spritesheet_Blocks_35: 753935465624360991
+      Grass-Spritesheet_Blocks_36: -3459913434812981794
+      Grass-Spritesheet_Blocks_37: 7109631036138084463
+      Grass-Spritesheet_Blocks_38: -8757038935297729748
+      Grass-Spritesheet_Blocks_39: -3447424160210857239
+      Grass-Spritesheet_Blocks_4: -4596498398587003565
+      Grass-Spritesheet_Blocks_40: -3842933645568465743
+      Grass-Spritesheet_Blocks_41: -9024475604935711715
+      Grass-Spritesheet_Blocks_42: 8739449931833751221
+      Grass-Spritesheet_Blocks_43: 6307097419550584966
+      Grass-Spritesheet_Blocks_44: 7173534998888048324
+      Grass-Spritesheet_Blocks_45: -8176787131571041748
+      Grass-Spritesheet_Blocks_46: -5248284218923225271
+      Grass-Spritesheet_Blocks_47: -805908518555402125
+      Grass-Spritesheet_Blocks_48: -2297336362018357480
+      Grass-Spritesheet_Blocks_49: 1056813830710588669
+      Grass-Spritesheet_Blocks_5: -2825464024933971720
+      Grass-Spritesheet_Blocks_6: -6565169670556864549
+      Grass-Spritesheet_Blocks_7: -5279396863705989510
+      Grass-Spritesheet_Blocks_8: 3166702483481089550
+      Grass-Spritesheet_Blocks_9: -5682190768324559031
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -12,9 +12,6 @@ TagManager:
   - AudioManager
   - VolumeSlider
   - LevelButton
-  - Player1Clone
-  - Player2Clone
-  - Player1+Player2
   layers:
   - Default
   - TransparentFX

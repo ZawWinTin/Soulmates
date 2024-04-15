@@ -13,6 +13,8 @@ public class AudioManager : MonoBehaviour
     [Range(0f, 1f)]
     public static float gameVolume;
 
+    private bool isVolumeChanged=false;
+
     void Awake()
     {
         //For preventing to duplicate Audio Manager
@@ -38,7 +40,7 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        Play("Theme1");
+        Play("Theme");
     }
 
     public void Play(string name)
@@ -49,9 +51,29 @@ public class AudioManager : MonoBehaviour
             Debug.LogWarning("Sound: " + name + " not found!");
             return;
         }
-        else
+        /*if (PauseMenu.isGamePaused)
         {
-            s.source.Play();
+            s.source.pitch *= .5f;
+        }*/
+        s.source.Play();
+    }
+
+    public void SetVolume(float vol)
+    {
+        isVolumeChanged = true;
+        gameVolume = vol;
+    }
+
+    void Update()
+    {
+        //audioMixer.GetFloat("volume");
+        if (isVolumeChanged)
+        {
+            isVolumeChanged = false;
+            AudioSource[] addedSounds=gameObject.GetComponents<AudioSource>();
+            for(int i=0;i< addedSounds.Length;i++) {
+                addedSounds[i].volume = sounds[i].volume * gameVolume;     //Adject with original volume
+            }                
         }
     }
 }

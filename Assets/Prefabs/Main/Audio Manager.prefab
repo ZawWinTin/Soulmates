@@ -44,10 +44,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sounds:
-  - name: Theme1
+  - name: Theme
     clip: {fileID: 8300000, guid: f5f144b98500bde44ae74979c7f0d410, type: 3}
-    volume: 1
+    volume: 0.3
     pitch: 1
     loop: 1
     source: {fileID: 0}
-  audioMixer: {fileID: 0}
+  - name: PlayerFall
+    clip: {fileID: 8300000, guid: 675fde3d2a637794393bc7deca58ba60, type: 3}
+    volume: 0.9
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+  - name: PlayerJump
+    clip: {fileID: 8300000, guid: 2fe2e93ba12ecc24ea71a4c8d3d26105, type: 3}
+    volume: 0.9
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}

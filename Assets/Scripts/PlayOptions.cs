@@ -21,8 +21,8 @@ public class PlayOptions : MonoBehaviour
 
         if (data == null)
         {
-            playableLevel = 1;  //Intial Playable Level for New Player
-            SaveSystem.SaveData(playableLevel);  
+            playableLevel = 1;  //Initial Playable Level for New Player
+            SaveSystem.SaveData(playableLevel);
         }
         else
         {
@@ -30,19 +30,19 @@ public class PlayOptions : MonoBehaviour
         }
         Debug.Log(playableLevel);
 
-        //Make Buttons to Enable and Disable 
+        //Make Buttons to Enable and Disable
         playMenu.SetActive(true);   // GameObject cannot access Tag which is not active !
-        GameObject[] levelButtoons = GameObject.FindGameObjectsWithTag("LevelButton");
-        for (int i = 0; i < levelButtoons.Length; i++)
-        {            
+        GameObject[] levelButtons = GameObject.FindGameObjectsWithTag("LevelButton");
+        for (int i = 0; i < levelButtons.Length; i++)
+        {
             //Level Start from 1
             if (i + 1 <= playableLevel)
             {
-                levelButtoons[i].GetComponent<Button>().interactable = true;
+                levelButtons[i].GetComponent<Button>().interactable = true;
             }
             else
             {
-                levelButtoons[i].GetComponent<Button>().interactable = false;
+                levelButtons[i].GetComponent<Button>().interactable = false;
             }
         }
         playMenu.SetActive(false);
@@ -51,7 +51,7 @@ public class PlayOptions : MonoBehaviour
     public void PlayButtonClicked()
     {
         if (playableLevel != 1)
-        {           
+        {
             playMenu.SetActive(true);
             mainMenu.SetActive(false);
         }

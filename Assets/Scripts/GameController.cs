@@ -13,11 +13,11 @@ public class GameController : MonoBehaviour
     private GameObject player1Clone, player2Clone, heart;
     private Tilemap groundTilemap;
 
-    private Vector3 player1CloneIntialPosition = new Vector3(0f, 0.5f, 0f);
-    private Vector3 player2CloneIntialPosition = new Vector3(0f, 0.3f, 0f);
+    private Vector3 player1CloneInitialPosition = new Vector3(0f, 0.5f, 0f);
+    private Vector3 player2CloneInitialPosition = new Vector3(0f, 0.3f, 0f);
     private Vector3 HeartAnimationInitialPosition = new Vector3(0f, 0.4f, 0f);
 
-    private bool isGameOver= false;
+    private bool isGameOver = false;
 
     private float heartAnimationDelay = 1f;
 
@@ -52,7 +52,7 @@ public class GameController : MonoBehaviour
     void Update()
     {
         //Game Over
-        if(player1.gravityScale==1 || player2.gravityScale == 1)
+        if (player1.gravityScale > 0 || player2.gravityScale > 0)
         {
             GameOver();
         }
@@ -74,7 +74,7 @@ public class GameController : MonoBehaviour
         {
             isLevelCompleted = true;
             completeLevelUI.SetActive(true);
-            
+
             if (SaveSystem.LoadData() == null)
                 Debug.LogError("Saved Level is not found !");
 
@@ -84,15 +84,15 @@ public class GameController : MonoBehaviour
             if (savedLevel < nextLevel) //Save level when playableLevel become greater
             {
                 SaveSystem.SaveData(nextLevel);
-            }            
+            }
         }
     }
 
     private void StackPlayer1AndPlayer2()
     {
         setOfPlayer1Player2.transform.position = groundTilemap.CellToWorld(groundTilemap.WorldToCell(player1.transform.position));
-        player1Clone.transform.position = setOfPlayer1Player2.transform.position + player1CloneIntialPosition;
-        player2Clone.transform.position = setOfPlayer1Player2.transform.position + player2CloneIntialPosition;
+        player1Clone.transform.position = setOfPlayer1Player2.transform.position + player1CloneInitialPosition;
+        player2Clone.transform.position = setOfPlayer1Player2.transform.position + player2CloneInitialPosition;
         heart.transform.position = setOfPlayer1Player2.transform.position + HeartAnimationInitialPosition;
 
         if (!setOfPlayer1Player2.activeInHierarchy)
@@ -105,7 +105,7 @@ public class GameController : MonoBehaviour
             player1.transform.GetChild(0).gameObject.SetActive(false);
             player1.GetComponent<SpriteRenderer>().enabled = false;
             player2.transform.GetChild(0).gameObject.SetActive(false);
-            player2.GetComponent<SpriteRenderer>().enabled = false;            
+            player2.GetComponent<SpriteRenderer>().enabled = false;
         }
     }
 
@@ -115,7 +115,7 @@ public class GameController : MonoBehaviour
         {
             setOfPlayer1Player2.SetActive(false);
 
-            //Set visible to orginal players
+            //Set visible to original players
             player1.transform.GetChild(0).gameObject.SetActive(true);
             player1.GetComponent<SpriteRenderer>().enabled = true;
             player2.transform.GetChild(0).gameObject.SetActive(true);

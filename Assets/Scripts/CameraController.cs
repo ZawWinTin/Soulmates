@@ -15,6 +15,6 @@ public class CameraController : MonoBehaviour
         {
             //Make camera follow to player without moving z position
             transform.position = new Vector3(playerTrasform.position.x, playerTrasform.position.y, transform.position.z);
-        }            
+        }
     }
 }

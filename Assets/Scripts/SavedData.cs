@@ -11,6 +11,6 @@ public class SavedData
 
     public SavedData(int l)
     {
-        level = l;        
+        level = l;
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 
 public class PlayerController : MonoBehaviour
@@ -38,6 +39,8 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private AudioSource[] audioSources;
 
+    private float dissolveDuration = 1f;
+
     private void Awake()
     {
         controls = new PlayersMovement();   //Get Unity New Input System
@@ -47,7 +50,7 @@ public class PlayerController : MonoBehaviour
         audioSources = GetComponents<AudioSource>();
         isMoving = false;
         isFalling = false;
-        
+
         if (name == "Player1")          //WASD for Player1 and Arrow keys for Player2 & Find Win Tile of Theirs
         {
             controls.Player1.Movement.performed += ctx => CharacterMove(ctx.ReadValue<Vector2>());
@@ -66,7 +69,7 @@ public class PlayerController : MonoBehaviour
         controls.Enable();
     }
 
-   private void OnDisable()
+    private void OnDisable()
     {
         controls.Disable();
     }
@@ -78,7 +81,7 @@ public class PlayerController : MonoBehaviour
         isPlayerWinning = false;
 
         zAngle = (Random.Range(0, 2) == 0) ? 1.0f : -1.0f;  //Randomly Decide Player Rotate Clockwise or AntiClockwise when Fall
-             
+
         winTileInCellPosition = groundTilemap.WorldToCell(winTile.position);    //Get position of Win_Tile in ground tile map
     }
 
@@ -87,50 +90,50 @@ public class PlayerController : MonoBehaviour
         //If Player's Current Tile has nothing
         if (!groundTilemap.HasTile(groundTilemap.WorldToCell(transform.position)) && isPlayerReal())
         {
-            FallPlayer();            
+            FallPlayer();
         }
-            
+
     }
 
     private void CharacterMove(Vector2 direction)
-    {        
+    {
         Vector2 movePosition;
-        if (!isMoving && rigidBody2D.gravityScale == 0 && Time.timeScale==1)
+        if (!isMoving && rigidBody2D.gravityScale == 0 && Time.timeScale == 1)
         {
             playerNextDirection = direction;
             //Specify Position to Move
             switch (direction)
             {
                 case Vector2 v when v.Equals(Vector2.up):
-                    spriteRenderer.flipX = true;                   
+                    spriteRenderer.flipX = true;
                     movePosition = gridMoveUp;
                     break;
                 case Vector2 v when v.Equals(Vector2.down):
-                    spriteRenderer.flipX = false;                    
+                    spriteRenderer.flipX = false;
                     movePosition = gridMoveDown;
                     break;
                 case Vector2 v when v.Equals(Vector2.left):
-                    spriteRenderer.flipX = true;                    
+                    spriteRenderer.flipX = true;
                     movePosition = gridMoveLeft;
                     break;
                 case Vector2 v when v.Equals(Vector2.right):
                     spriteRenderer.flipX = false;
-                    movePosition = gridMoveRight;                    
+                    movePosition = gridMoveRight;
                     break;
                 default:
                     movePosition = Vector2.zero;
                     break;
-            }            
+            }
             StartCoroutine(GridMovement(movePosition)); //Move as GridBased Movement with smoothness
             Invoke("CheckWinning", timeToMove); //Wait Movement and Check Current Player's Position for Winning or not
-        }        
+        }
     }
 
     private IEnumerator GridMovement(Vector2 direction)
     {
         isMoving = true;    //Prevent Other Inputs while Moving
         animator.SetBool("isJumping", true);    //Start Jump Animation
-        
+
         foreach (AudioSource audioSource in audioSources)
         {
             if (audioSource.clip.name == "jump" && isPlayerReal())
@@ -170,23 +173,97 @@ public class PlayerController : MonoBehaviour
             GameObject winTile2 = GameObject.FindGameObjectWithTag("WinTile2");
             if (playerLastPosition == groundTilemap.WorldToCell(winTile1.transform.position))
             {
-                winTile1.GetComponent<SpriteRenderer>().enabled = false;
-                winTile1.transform.GetChild(0).gameObject.SetActive(false);             //Turn Light Off
+                StartCoroutine(DissolveWinTile(winTile1));
                 winTile1.transform.GetChild(1).GetComponent<ParticleSystem>().Stop();   //Stop Particle System
                 FindObjectOfType<GameController>().GameOver();
             }
             if (playerLastPosition == groundTilemap.WorldToCell(winTile2.transform.position))
             {
-                winTile2.GetComponent<SpriteRenderer>().enabled = false;
-                winTile2.transform.GetChild(0).gameObject.SetActive(false);             //Turn Light Off
+                StartCoroutine(DissolveWinTile(winTile2));
                 winTile2.transform.GetChild(1).GetComponent<ParticleSystem>().Stop();   //Stop Particle System
                 FindObjectOfType<GameController>().GameOver();
             }
-            groundTilemap.SetTile(groundTilemap.WorldToCell(originalPosition), null);   //remove tile of character last position
+            StartCoroutine(
+               DestroyTile(
+                   groundTilemap.GetTile(groundTilemap.WorldToCell(originalPosition))
+                   , playerLastPosition
+                )
+            );
         }
 
         animator.SetBool("isJumping", false);    //Stop Jump Animation
         isMoving = false;   //Accept other Input
+    }
+
+    private IEnumerator DissolveWinTile(GameObject winTile)
+    {
+        Material winTileMaterial = winTile.GetComponent<SpriteRenderer>().material;
+        winTileMaterial.renderQueue = 3000;
+
+        GameObject light = winTile.transform.GetChild(0).gameObject;
+        float initialLightIntensity = light.GetComponent<Light2D>().intensity;
+
+        winTile.AddComponent<Rigidbody2D>();
+        winTile.GetComponent<Rigidbody2D>().gravityScale = -0.5f;
+        // Dissolve effect
+        float fade = 1f;
+        while (fade > 0f)
+        {
+            fade -= Time.deltaTime / dissolveDuration;
+            fade = Mathf.Clamp01(fade);
+
+            winTileMaterial.SetFloat("_Fade", fade);
+            light.GetComponent<Light2D>().intensity = Mathf.Lerp(initialLightIntensity, 0f, 1 - fade); //Light Dissolve Effect
+            yield return null;
+        }
+        winTile.GetComponent<SpriteRenderer>().enabled = false;
+
+        light.SetActive(false);             //Turn Light Off
+    }
+
+    private IEnumerator DestroyTile(TileBase tileBase, Vector3Int cellPosition)
+    {
+        Material tileMaterial = groundTilemap.GetComponent<TilemapRenderer>().material;
+        if (tileBase == null) yield break;
+
+        // Create a temporary tile renderer for this specific tile
+        GameObject tempTileObject = new GameObject("DissolvingTile");
+        SpriteRenderer spriteRenderer = tempTileObject.AddComponent<SpriteRenderer>();
+
+        // Set the sprite to match the tile
+        Sprite tileSprite = groundTilemap.GetSprite(cellPosition);
+        spriteRenderer.sprite = tileSprite;
+
+        // Position the temporary object exactly where the tile is
+        tempTileObject.transform.SetParent(groundTilemap.transform.parent, false);
+
+        tempTileObject.transform.position = groundTilemap.GetCellCenterWorld(cellPosition);
+
+        TilemapRenderer tilemapRenderer = groundTilemap.GetComponent<TilemapRenderer>();
+        spriteRenderer.sortingOrder = tilemapRenderer.sortingOrder;
+        // Create a material instance for dissolving
+        Material dissolveMaterial = new Material(tileMaterial);
+        spriteRenderer.material = dissolveMaterial;
+        tempTileObject.AddComponent<Rigidbody2D>();
+        tempTileObject.GetComponent<Rigidbody2D>().gravityScale = 0.8f;
+
+        // Dissolve effect
+        float fade = 1f;
+
+        // Remove the tile from the tilemap
+        groundTilemap.SetTile(cellPosition, null);
+        while (fade > 0f)
+        {
+            fade -= Time.deltaTime / dissolveDuration;
+            fade = Mathf.Clamp01(fade);
+
+            dissolveMaterial.SetFloat("_Fade", fade);
+            yield return null;
+        }
+
+
+        // Destroy the temporary tile object
+        Destroy(tempTileObject);
     }
 
     private void CheckWinning()
@@ -196,7 +273,7 @@ public class PlayerController : MonoBehaviour
         {
             isPlayerWinning = true;
             OnDisable();    // Disable Control of Player
-        }            
+        }
     }
 
     private void FallPlayer()
@@ -205,7 +282,8 @@ public class PlayerController : MonoBehaviour
         if (!isFalling)
         {
             isFalling = true;
-            rigidBody2D.gravityScale = 1;
+            OnDisable();
+            rigidBody2D.gravityScale = 0.6f;
             spriteRenderer.sortingOrder = 0;
             foreach (AudioSource audioSource in audioSources)
             {
@@ -214,7 +292,7 @@ public class PlayerController : MonoBehaviour
                     audioSource.Play();
                 }
             }
-        }        
+        }
     }
 
     private bool isPlayerReal()

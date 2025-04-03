@@ -12,6 +12,6 @@ public class LevelCompletePopup : MonoBehaviour
 
     public void NextLevel()
     {
-        FindObjectOfType<LevelLoader>().StartLevel(SceneManager.GetActiveScene().buildIndex+1);
+        FindObjectOfType<LevelLoader>().StartLevel(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

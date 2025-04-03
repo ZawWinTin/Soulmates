@@ -8,6 +8,7 @@ public static class SaveSystem
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = Application.persistentDataPath + "/level.pz";
+        Debug.Log("Saved at: " + path);
         FileStream stream = new FileStream(path, FileMode.Create);
 
         SavedData data = new SavedData(level);
@@ -18,15 +19,15 @@ public static class SaveSystem
 
     public static SavedData LoadData()
     {
-        string path= Application.persistentDataPath + "/level.pz";
+        string path = Application.persistentDataPath + "/level.pz";
         if (File.Exists(path))
         {
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(path, FileMode.Open);
 
-            SavedData data =formatter.Deserialize(stream) as SavedData;
+            SavedData data = formatter.Deserialize(stream) as SavedData;
             stream.Close();
-            
+
             return data;
         }
         else

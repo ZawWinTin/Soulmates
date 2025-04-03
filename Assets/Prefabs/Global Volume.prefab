@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &906575953655491417
+--- !u!1 &2809877718603598547
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 906575953655491422}
-  - component: {fileID: 906575953655491423}
+  - component: {fileID: 8562663866195179158}
+  - component: {fileID: 578744023474138847}
   m_Layer: 0
-  m_Name: Audio Manager
-  m_TagString: AudioManager
+  m_Name: Global Volume
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &906575953655491422
+--- !u!4 &8562663866195179158
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906575953655491417}
+  m_GameObject: {fileID: 2809877718603598547}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -3, y: 0.875, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &906575953655491423
+--- !u!114 &578744023474138847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906575953655491417}
+  m_GameObject: {fileID: 2809877718603598547}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14e81547df8cb7240acbee0a004cd843, type: 3}
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sounds:
-  - name: Theme1
-    clip: {fileID: 8300000, guid: f5f144b98500bde44ae74979c7f0d410, type: 3}
-    volume: 1
-    pitch: 1
-    loop: 1
-    audioMixerGroup: {fileID: -8243036602730110094, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
-    source: {fileID: 0}
-  audioMixer: {fileID: 0}
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 2eda8c53a2a12eb4d871805e6e16570f, type: 2}

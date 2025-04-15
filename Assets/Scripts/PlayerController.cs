@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
         winTileInCellPosition = groundTilemap.WorldToCell(winTile.position);    //Get position of Win_Tile in ground tile map
     }
 
-    void Update()
+    void FixedUpdate()
     {
         //If Player's Current Tile has nothing
         if (!groundTilemap.HasTile(groundTilemap.WorldToCell(transform.position)) && isPlayerReal())
@@ -247,6 +247,8 @@ public class PlayerController : MonoBehaviour
         tempTileObject.AddComponent<Rigidbody2D>();
         tempTileObject.GetComponent<Rigidbody2D>().gravityScale = 0.8f;
 
+        StartCoroutine(UpdateDroppingSortingOrder(spriteRenderer));
+
         // Dissolve effect
         float fade = 1f;
 
@@ -284,7 +286,6 @@ public class PlayerController : MonoBehaviour
             isFalling = true;
             OnDisable();
             rigidBody2D.gravityScale = 0.6f;
-            spriteRenderer.sortingOrder = 0;
             foreach (AudioSource audioSource in audioSources)
             {
                 if (audioSource.clip.name == "fall" && isPlayerReal())
@@ -292,7 +293,15 @@ public class PlayerController : MonoBehaviour
                     audioSource.Play();
                 }
             }
+            StartCoroutine(UpdateDroppingSortingOrder(spriteRenderer));
         }
+    }
+
+    private IEnumerator UpdateDroppingSortingOrder(SpriteRenderer spriteRenderer)
+    {
+        float delay = 300f / 1000f;
+        yield return new WaitForSeconds(delay);
+        spriteRenderer.sortingOrder = -1;
     }
 
     private bool isPlayerReal()

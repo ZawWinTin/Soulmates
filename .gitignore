@@ -22,6 +22,17 @@
 # Visual Studio cache directory
 .vs/
 
+# Claude Code personal settings (committed: .claude/settings.json; ignored: .local.json)
+.claude/settings.local.json
+
+# .NET tools cache (csharpier etc.) — manifest in .config/dotnet-tools.json IS committed
+.dotnet/
+**/obj/
+**/bin/
+
+# macOS metadata
+.DS_Store
+
 # Gradle cache directory
 .gradle/
 

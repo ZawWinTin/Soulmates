@@ -13,9 +13,13 @@ public class PauseMenu : MonoBehaviour
     {
         gameController = FindObjectOfType<GameController>().gameObject;
     }
+
     void Update()
     {
-        if (Keyboard.current[Key.Escape].wasPressedThisFrame && !gameController.GetComponent<GameController>().isLevelCompleted) //New Input System
+        if (
+            Keyboard.current[Key.Escape].wasPressedThisFrame
+            && !gameController.GetComponent<GameController>().isLevelCompleted
+        ) //New Input System
         {
             if (isGamePaused)
             {
@@ -38,7 +42,7 @@ public class PauseMenu : MonoBehaviour
     public void PauseGame()
     {
         pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f;    //Freeze time
+        Time.timeScale = 0f; //Freeze time
         isGamePaused = true;
     }
 
@@ -47,6 +51,7 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1f;
     }
+
     public void QuitGame()
     {
         Helper.QuitGame();

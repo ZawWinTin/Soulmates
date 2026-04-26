@@ -6,11 +6,14 @@ using UnityEngine.Tilemaps;
 
 public class GameController : MonoBehaviour
 {
-    private Rigidbody2D player1, player2;
+    private Rigidbody2D player1,
+        player2;
     public GameObject completeLevelUI;
 
     private GameObject setOfPlayer1Player2;
-    private GameObject player1Clone, player2Clone, heart;
+    private GameObject player1Clone,
+        player2Clone,
+        heart;
     private Tilemap groundTilemap;
 
     private Vector3 player1CloneInitialPosition = new Vector3(0f, 0.5f, 0f);
@@ -38,6 +41,7 @@ public class GameController : MonoBehaviour
         heart = setOfPlayer1Player2.transform.GetChild(2).gameObject;
         setOfPlayer1Player2.SetActive(false);
     }
+
     public void GameOver()
     {
         if (!isGameOver)
@@ -62,7 +66,10 @@ public class GameController : MonoBehaviour
         }
 
         //Winning State
-        if (player1.GetComponent<PlayerController>().isPlayerWinning && player2.GetComponent<PlayerController>().isPlayerWinning)
+        if (
+            player1.GetComponent<PlayerController>().isPlayerWinning
+            && player2.GetComponent<PlayerController>().isPlayerWinning
+        )
         {
             CompleteLevel();
         }
@@ -75,10 +82,8 @@ public class GameController : MonoBehaviour
             isLevelCompleted = true;
             completeLevelUI.SetActive(true);
 
-            if (SaveSystem.LoadData() == null)
-                Debug.LogError("Saved Level is not found !");
-
-            int savedLevel = SaveSystem.LoadData().level;
+            SavedData data = SaveSystem.LoadData();
+            int savedLevel = data != null ? data.level : 0;
             int nextLevel = SceneManager.GetActiveScene().buildIndex + 1;
 
             if (savedLevel < nextLevel) //Save level when playableLevel become greater
@@ -90,18 +95,27 @@ public class GameController : MonoBehaviour
 
     private void StackPlayer1AndPlayer2()
     {
-        setOfPlayer1Player2.transform.position = groundTilemap.CellToWorld(groundTilemap.WorldToCell(player1.transform.position));
-        player1Clone.transform.position = setOfPlayer1Player2.transform.position + player1CloneInitialPosition;
-        player2Clone.transform.position = setOfPlayer1Player2.transform.position + player2CloneInitialPosition;
-        heart.transform.position = setOfPlayer1Player2.transform.position + HeartAnimationInitialPosition;
+        setOfPlayer1Player2.transform.position = groundTilemap.CellToWorld(
+            groundTilemap.WorldToCell(player1.transform.position)
+        );
+        player1Clone.transform.position =
+            setOfPlayer1Player2.transform.position + player1CloneInitialPosition;
+        player2Clone.transform.position =
+            setOfPlayer1Player2.transform.position + player2CloneInitialPosition;
+        heart.transform.position =
+            setOfPlayer1Player2.transform.position + HeartAnimationInitialPosition;
 
         if (!setOfPlayer1Player2.activeInHierarchy)
         {
             //Make invisible to original and visible to clone
             setOfPlayer1Player2.SetActive(true);
             StartCoroutine(HeartAnimationAppear());
-            player1Clone.GetComponent<SpriteRenderer>().flipX = player1.GetComponent<SpriteRenderer>().flipX;
-            player2Clone.GetComponent<SpriteRenderer>().flipX = player2.GetComponent<SpriteRenderer>().flipX;
+            player1Clone.GetComponent<SpriteRenderer>().flipX = player1
+                .GetComponent<SpriteRenderer>()
+                .flipX;
+            player2Clone.GetComponent<SpriteRenderer>().flipX = player2
+                .GetComponent<SpriteRenderer>()
+                .flipX;
             player1.transform.GetChild(0).gameObject.SetActive(false);
             player1.GetComponent<SpriteRenderer>().enabled = false;
             player2.transform.GetChild(0).gameObject.SetActive(false);
@@ -125,9 +139,15 @@ public class GameController : MonoBehaviour
 
     private void CheckPlayersAreInSameTile()
     {
-        if (!player1.GetComponent<PlayerController>().isMoving && !player2.GetComponent<PlayerController>().isMoving)
+        if (
+            !player1.GetComponent<PlayerController>().isMoving
+            && !player2.GetComponent<PlayerController>().isMoving
+        )
         {
-            if (groundTilemap.WorldToCell(player1.transform.position) == groundTilemap.WorldToCell(player2.transform.position))
+            if (
+                groundTilemap.WorldToCell(player1.transform.position)
+                == groundTilemap.WorldToCell(player2.transform.position)
+            )
             {
                 StackPlayer1AndPlayer2();
             }

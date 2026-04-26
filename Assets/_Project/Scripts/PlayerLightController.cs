@@ -15,12 +15,12 @@ public class PlayerLightController : MonoBehaviour
     public float minRadius = 0.3f;
     public float maxRadius = 0.8f;
 
-
     // Optional parameters for more natural feel
     public bool useRandomOffset = true;
     public float intensityOffset = 0.0f;
 
     private float randomOffset;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,7 +44,8 @@ public class PlayerLightController : MonoBehaviour
         breathingFactor = (breathingFactor + 1f) * 0.5f;
 
         // Apply intensity based on min/max values
-        float currentIntensity = Mathf.Lerp(minIntensity, maxIntensity, breathingFactor) + intensityOffset;
+        float currentIntensity =
+            Mathf.Lerp(minIntensity, maxIntensity, breathingFactor) + intensityOffset;
 
         // Apply to light
         light2D.intensity = currentIntensity;

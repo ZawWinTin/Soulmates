@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
@@ -24,9 +24,9 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        DontDestroyOnLoad(gameObject);  //For preventing to restart sound everytime when Scene load
+        DontDestroyOnLoad(gameObject); //For preventing to restart sound everytime when Scene load
 
-        foreach (Sound s in sounds)  //Adding AudioSource Component in this Audio Manager
+        foreach (Sound s in sounds) //Adding AudioSource Component in this Audio Manager
         {
             s.source = gameObject.AddComponent<AudioSource>();
             s.source.outputAudioMixerGroup = s.audioMixerGroup;
@@ -45,7 +45,7 @@ public class AudioManager : MonoBehaviour
     public void Play(string name)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s == null)  //If Can't Find name of sound
+        if (s == null) //If Can't Find name of sound
         {
             Debug.LogWarning("Sound: " + name + " not found!");
             return;

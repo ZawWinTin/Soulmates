@@ -14,7 +14,11 @@ public class CameraController : MonoBehaviour
         if (playerRigidbody2D.gravityScale == 0)
         {
             //Make camera follow to player without moving z position
-            transform.position = new Vector3(playerTrasform.position.x, playerTrasform.position.y, transform.position.z);
+            transform.position = new Vector3(
+                playerTrasform.position.x,
+                playerTrasform.position.y,
+                transform.position.z
+            );
         }
     }
 }

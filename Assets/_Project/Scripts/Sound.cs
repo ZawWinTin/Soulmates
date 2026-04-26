@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
-[System.Serializable]   //Appear in the inspector for Custom Class
+[System.Serializable] //Appear in the inspector for Custom Class
 public class Sound
 {
     public string name;

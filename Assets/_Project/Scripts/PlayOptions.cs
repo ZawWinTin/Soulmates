@@ -8,7 +8,8 @@ public class PlayOptions : MonoBehaviour
     private SavedData data;
     private int playableLevel;
 
-    public GameObject mainMenu, playMenu;
+    public GameObject mainMenu,
+        playMenu;
 
     void Awake()
     {
@@ -21,7 +22,7 @@ public class PlayOptions : MonoBehaviour
 
         if (data == null)
         {
-            playableLevel = 1;  //Initial Playable Level for New Player
+            playableLevel = 1; //Initial Playable Level for New Player
             SaveSystem.SaveData(playableLevel);
         }
         else
@@ -31,7 +32,7 @@ public class PlayOptions : MonoBehaviour
         Debug.Log(playableLevel);
 
         //Make Buttons to Enable and Disable
-        playMenu.SetActive(true);   // GameObject cannot access Tag which is not active !
+        playMenu.SetActive(true); // GameObject cannot access Tag which is not active !
         GameObject[] levelButtons = GameObject.FindGameObjectsWithTag("LevelButton");
         for (int i = 0; i < levelButtons.Length; i++)
         {

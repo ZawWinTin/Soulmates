@@ -20,7 +20,8 @@ public class PlayerController : MonoBehaviour
 
     private bool isFalling;
     private float timeToMove = 0.35f;
-    private Vector3 originalPosition, targetPosition;
+    private Vector3 originalPosition,
+        targetPosition;
     private Vector3Int winTileInCellPosition;
     private float zAngle;
 
@@ -43,7 +44,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        controls = new PlayersMovement();   //Get Unity New Input System
+        controls = new PlayersMovement(); //Get Unity New Input System
         spriteRenderer = GetComponent<SpriteRenderer>();
         rigidBody2D = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -51,7 +52,7 @@ public class PlayerController : MonoBehaviour
         isMoving = false;
         isFalling = false;
 
-        if (name == "Player1")          //WASD for Player1 and Arrow keys for Player2 & Find Win Tile of Theirs
+        if (name == "Player1") //WASD for Player1 and Arrow keys for Player2 & Find Win Tile of Theirs
         {
             controls.Player1.Movement.performed += ctx => CharacterMove(ctx.ReadValue<Vector2>());
             winTile = GameObject.FindGameObjectWithTag("WinTile1").GetComponent<Transform>();
@@ -77,12 +78,12 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rigidBody2D.gravityScale = 0;    //Make Character Not Falling
+        rigidBody2D.gravityScale = 0; //Make Character Not Falling
         isPlayerWinning = false;
 
-        zAngle = (Random.Range(0, 2) == 0) ? 1.0f : -1.0f;  //Randomly Decide Player Rotate Clockwise or AntiClockwise when Fall
+        zAngle = (Random.Range(0, 2) == 0) ? 1.0f : -1.0f; //Randomly Decide Player Rotate Clockwise or AntiClockwise when Fall
 
-        winTileInCellPosition = groundTilemap.WorldToCell(winTile.position);    //Get position of Win_Tile in ground tile map
+        winTileInCellPosition = groundTilemap.WorldToCell(winTile.position); //Get position of Win_Tile in ground tile map
     }
 
     void FixedUpdate()
@@ -92,7 +93,6 @@ public class PlayerController : MonoBehaviour
         {
             FallPlayer();
         }
-
     }
 
     private void CharacterMove(Vector2 direction)
@@ -131,8 +131,8 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator GridMovement(Vector2 direction)
     {
-        isMoving = true;    //Prevent Other Inputs while Moving
-        animator.SetBool("isJumping", true);    //Start Jump Animation
+        isMoving = true; //Prevent Other Inputs while Moving
+        animator.SetBool("isJumping", true); //Start Jump Animation
 
         foreach (AudioSource audioSource in audioSources)
         {
@@ -148,22 +148,40 @@ public class PlayerController : MonoBehaviour
         targetPosition = originalPosition + (Vector3)direction;
 
         //Check Climb Down or Not in Stack Condition
-        if (gameObject.tag == "Player1Clone" && playerNextDirection != GameObject.FindGameObjectWithTag("Player2Clone").GetComponent<PlayerController>().playerNextDirection)
+        if (
+            gameObject.tag == "Player1Clone"
+            && playerNextDirection
+                != GameObject
+                    .FindGameObjectWithTag("Player2Clone")
+                    .GetComponent<PlayerController>()
+                    .playerNextDirection
+        )
         {
             targetPosition += player1CloneDeclinePosition;
         }
-        if (gameObject.tag == "Player2Clone" && playerNextDirection != GameObject.FindGameObjectWithTag("Player1Clone").GetComponent<PlayerController>().playerNextDirection)
+        if (
+            gameObject.tag == "Player2Clone"
+            && playerNextDirection
+                != GameObject
+                    .FindGameObjectWithTag("Player1Clone")
+                    .GetComponent<PlayerController>()
+                    .playerNextDirection
+        )
         {
             targetPosition += player2CloneDeclinePosition;
         }
 
         while (elapsedTime < timeToMove)
         {
-            transform.position = Vector3.Lerp(originalPosition, targetPosition, (elapsedTime / timeToMove));
+            transform.position = Vector3.Lerp(
+                originalPosition,
+                targetPosition,
+                (elapsedTime / timeToMove)
+            );
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-        transform.position = targetPosition;    //Make sure to move character to target position
+        transform.position = targetPosition; //Make sure to move character to target position
 
         //Check Players are entering wrong color wintile or not
         if (isPlayerReal())
@@ -174,25 +192,25 @@ public class PlayerController : MonoBehaviour
             if (playerLastPosition == groundTilemap.WorldToCell(winTile1.transform.position))
             {
                 StartCoroutine(DissolveWinTile(winTile1));
-                winTile1.transform.GetChild(1).GetComponent<ParticleSystem>().Stop();   //Stop Particle System
+                winTile1.transform.GetChild(1).GetComponent<ParticleSystem>().Stop(); //Stop Particle System
                 FindObjectOfType<GameController>().GameOver();
             }
             if (playerLastPosition == groundTilemap.WorldToCell(winTile2.transform.position))
             {
                 StartCoroutine(DissolveWinTile(winTile2));
-                winTile2.transform.GetChild(1).GetComponent<ParticleSystem>().Stop();   //Stop Particle System
+                winTile2.transform.GetChild(1).GetComponent<ParticleSystem>().Stop(); //Stop Particle System
                 FindObjectOfType<GameController>().GameOver();
             }
             StartCoroutine(
-               DestroyTile(
-                   groundTilemap.GetTile(groundTilemap.WorldToCell(originalPosition))
-                   , playerLastPosition
+                DestroyTile(
+                    groundTilemap.GetTile(groundTilemap.WorldToCell(originalPosition)),
+                    playerLastPosition
                 )
             );
         }
 
-        animator.SetBool("isJumping", false);    //Stop Jump Animation
-        isMoving = false;   //Accept other Input
+        animator.SetBool("isJumping", false); //Stop Jump Animation
+        isMoving = false; //Accept other Input
     }
 
     private IEnumerator DissolveWinTile(GameObject winTile)
@@ -213,18 +231,23 @@ public class PlayerController : MonoBehaviour
             fade = Mathf.Clamp01(fade);
 
             winTileMaterial.SetFloat("_Fade", fade);
-            light.GetComponent<Light2D>().intensity = Mathf.Lerp(initialLightIntensity, 0f, 1 - fade); //Light Dissolve Effect
+            light.GetComponent<Light2D>().intensity = Mathf.Lerp(
+                initialLightIntensity,
+                0f,
+                1 - fade
+            ); //Light Dissolve Effect
             yield return null;
         }
         winTile.GetComponent<SpriteRenderer>().enabled = false;
 
-        light.SetActive(false);             //Turn Light Off
+        light.SetActive(false); //Turn Light Off
     }
 
     private IEnumerator DestroyTile(TileBase tileBase, Vector3Int cellPosition)
     {
         Material tileMaterial = groundTilemap.GetComponent<TilemapRenderer>().material;
-        if (tileBase == null) yield break;
+        if (tileBase == null)
+            yield break;
 
         // Create a temporary tile renderer for this specific tile
         GameObject tempTileObject = new GameObject("DissolvingTile");
@@ -263,7 +286,6 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-
         // Destroy the temporary tile object
         Destroy(tempTileObject);
     }
@@ -274,7 +296,7 @@ public class PlayerController : MonoBehaviour
         if (winTileInCellPosition == playerCurrentTileinCellPosition)
         {
             isPlayerWinning = true;
-            OnDisable();    // Disable Control of Player
+            OnDisable(); // Disable Control of Player
         }
     }
 

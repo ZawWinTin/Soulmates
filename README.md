@@ -50,8 +50,8 @@ CSharpier is now available as `dotnet csharpier`.
 
 | Command | What it does |
 |---|---|
-| `dotnet csharpier .` | Format every C# file in the project (vendor code + auto-generated input scripts skipped via `.csharpierignore`) |
-| `dotnet csharpier --check .` | Check formatting without writing — exits non-zero if anything is unformatted (CI-friendly) |
+| `dotnet csharpier format .` | Format every C# file in the project (vendor code + auto-generated input scripts skipped via `.csharpierignore`) |
+| `dotnet csharpier check .` | Check formatting without writing — exits non-zero if anything is unformatted (CI-friendly) |
 | `dotnet tool restore` | Install/restore tools pinned in `.config/dotnet-tools.json` after pulling |
 
 ### VSCode setup (recommended)

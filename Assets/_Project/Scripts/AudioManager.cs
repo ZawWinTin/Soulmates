@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
@@ -37,9 +38,69 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     void Start()
     {
+        ApplySavedVolumes(); // restore the player's saved music/SFX levels before anything plays
         Play("Theme1");
+        HookButtonClicks(); // wire the scene the Audio Manager was created in
+    }
+
+    // The options panel (which owns the sliders) starts inactive, so it can't restore volumes at
+    // launch. This always-active singleton does it: push the saved dB values onto the mixer's
+    // exposed "music" / "sfx" params. The mixer is reached via the sounds' shared mixer group, so
+    // no extra inspector wiring is needed.
+    private void ApplySavedVolumes()
+    {
+        AudioMixer mixer = audioMixer;
+        if (mixer == null)
+        {
+            foreach (Sound s in sounds)
+            {
+                if (s.audioMixerGroup != null)
+                {
+                    mixer = s.audioMixerGroup.audioMixer;
+                    break;
+                }
+            }
+        }
+        if (mixer == null)
+            return;
+
+        mixer.SetFloat("music", PlayerPrefs.GetFloat(OptionsMenu.MusicPrefKey, 0f));
+        mixer.SetFloat("sfx", PlayerPrefs.GetFloat(OptionsMenu.SFXPrefKey, 0f));
+    }
+
+    // Every scene load: attach the UI click sound to all buttons (including ones in panels that
+    // start inactive, like Pause / Win). Buttons are per-scene and destroyed on unload, so the
+    // singleton re-hooks fresh ones each load without ever double-adding.
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        HookButtonClicks();
+    }
+
+    private void HookButtonClicks()
+    {
+        if (instance != this)
+            return; // only the surviving singleton hooks (a duplicate destroys itself in Awake)
+        foreach (Button button in FindObjectsOfType<Button>(true))
+        {
+            button.onClick.AddListener(PlayClick);
+        }
+    }
+
+    private void PlayClick()
+    {
+        Play("Click");
     }
 
     public void Play(string name)

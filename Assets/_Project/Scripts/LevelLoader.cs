@@ -7,7 +7,7 @@ public class LevelLoader : MonoBehaviour
 {
     public Animator transition;
 
-    private float delay = 0.5f;
+    private float delay = 0.12f;
     private float transitionTime = 1f;
 
     public void StartLevel(int levelIndex)

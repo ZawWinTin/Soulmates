@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 906575953655491417}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &906575953655491423
 MonoBehaviour:
@@ -51,5 +51,68 @@ MonoBehaviour:
     pitch: 1
     loop: 1
     audioMixerGroup: {fileID: -8243036602730110094, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: JumpBoy
+    clip: {fileID: 8300000, guid: a1b2c3d4e5f60718293a4b5c6d7e8f90, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: JumpGirl
+    clip: {fileID: 8300000, guid: b2c3d4e5f6071829304a5b6c7d8e9f01, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: Fall
+    clip: {fileID: 8300000, guid: 675fde3d2a637794393bc7deca58ba60, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: FallGirl
+    clip: {fileID: 8300000, guid: 0718293a4b5c6d7e8f901a2b3c4d5e6f, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: WinBoy
+    clip: {fileID: 8300000, guid: c3d4e5f60718293a4b5c6d7e8f901a2b, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: WinGirl
+    clip: {fileID: 8300000, guid: d4e5f6071829304a5b6c7d8e9f012b3c, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: LevelComplete
+    clip: {fileID: 8300000, guid: e5f60718293a4b5c6d7e8f901a2b3c4d, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: Click
+    clip: {fileID: 8300000, guid: f60718293a4b5c6d7e8f901a2b3c4d5e, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
+  - name: StarCollect
+    clip: {fileID: 8300000, guid: 24ab283ab13394e4a930560403ef406b, type: 3}
+    volume: 0.8
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
     source: {fileID: 0}
   audioMixer: {fileID: 0}

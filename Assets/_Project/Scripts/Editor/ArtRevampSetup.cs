@@ -21,6 +21,7 @@ public static class ArtRevampSetup
 {
     const string UIDir = "Assets/_Project/Sprites/UI/";
     const string MenuScene = "Assets/_Project/Scenes/Menu.unity";
+    const string CreditScene = "Assets/_Project/Scenes/Credit.unity";
 
     // ── Modern UI kit (sliced from for_claude/ui_kits.png → Sprites/UI) ─────────
     // Designed sprites, not tinted rects: a clean cream panel (ui_card), a coral pill button (ui_btn),
@@ -641,6 +642,50 @@ public static class ArtRevampSetup
         Debug.Log(
             "[ArtRevamp] Wired 'StarCollect' SFX on the Audio Manager. StarPickup plays it on collect."
         );
+    }
+
+    // Set the TIME-star threshold (seconds to finish and still earn the time star) per level. Writes
+    // a per-scene override onto each level's Game Controller. Tweak the table below to taste.
+    [MenuItem("Tools/Soulmates/Set Time-Star Pars (all levels)")]
+    public static void SetTimeStarPars()
+    {
+        var pars = new[]
+        {
+            ("Level01", 20f),
+            ("Level02", 25f),
+            ("Level03", 30f),
+            ("Level04", 35f),
+            ("Level05", 40f),
+            ("Level06", 45f),
+            ("Level07", 50f),
+            ("Level08", 55f),
+            ("Level09", 60f),
+        };
+
+        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            return;
+        string current = EditorSceneManager.GetActiveScene().path;
+        int done = 0;
+        foreach (var (sc, secs) in pars)
+        {
+            string path = $"Assets/_Project/Scenes/{sc}.unity";
+            var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+            var gc = Object.FindObjectOfType<GameController>();
+            if (gc == null)
+            {
+                Debug.LogWarning($"[ArtRevamp] No GameController in {sc}.");
+                continue;
+            }
+            Undo.RecordObject(gc, "Set time-star par");
+            gc.timeParSeconds = secs;
+            EditorUtility.SetDirty(gc);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            done++;
+        }
+        if (!string.IsNullOrEmpty(current))
+            EditorSceneManager.OpenScene(current);
+        Debug.Log($"[ArtRevamp] Time-star pars set on {done}/9 levels.");
     }
 
     // Unlit material carrying the sparkle twinkle texture, for the collectible star's particle system.
@@ -1699,15 +1744,15 @@ public static class ArtRevampSetup
         WinSlimeBlink(FindIn(popup, "Player1Image"), "char_boy_front", "char_boy_blink");
         WinSlimeBlink(FindIn(popup, "Player2Image"), "char_girl_front", "char_girl_blink");
 
-        // a heart between them
-        var heart = Load("icon_heart.png");
+        // a heart between them — our glossy 3D red heart
+        var heart = Heart3D();
         if (heart != null)
         {
-            var hg = MakeImage(popup, "WinHeart", heart, new Color(1f, 0.45f, 0.6f));
+            var hg = MakeImage(popup, "WinHeart", heart, Color.white);
             var hgrt = hg.GetComponent<RectTransform>();
             hgrt.anchorMin = hgrt.anchorMax = new Vector2(0.5f, 0.5f);
             hgrt.pivot = new Vector2(0.5f, 0.5f);
-            hgrt.sizeDelta = new Vector2(42f, 42f);
+            hgrt.sizeDelta = new Vector2(50f, 50f);
             hgrt.anchoredPosition = new Vector2(0f, -ch * 0.06f);
             var hi = hg.GetComponent<Image>();
             hi.type = Image.Type.Simple;
@@ -2650,6 +2695,271 @@ public static class ArtRevampSetup
     }
 
     static Sprite Load(string file) => AssetDatabase.LoadAssetAtPath<Sprite>(UIDir + file);
+
+    // Our glossy 3D red heart (shared by the win + credit screens); falls back to the flat icon.
+    static Sprite Heart3D() =>
+        AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Sprites/heart_3d.png")
+        ?? Load("icon_heart.png");
+
+    // Revamp the end-of-game credits into the Soft Candy look: kawaii sky, a soft card, the two
+    // soulmates with a floating heart between them, styled thanks/made-by text, a coral Main Menu
+    // pill, and gentle heart/star confetti. Everything reuses the shared UI primitives.
+    [MenuItem("Tools/Soulmates/Apply Credit Screen")]
+    public static void ApplyCreditScreen()
+    {
+        var scene = EditorSceneManager.OpenScene(CreditScene, OpenSceneMode.Single);
+        // Parent onto the CONTENT canvas (the one holding the credits), found via an existing child —
+        // NOT FindObjectOfType<Canvas>(), which can return the LevelLoader's high-sort fade canvas and
+        // make our card render on top of (and hide) all the content.
+        var anchorGo = Find(scene, "Background") ?? Find(scene, "Thanks");
+        if (anchorGo == null || anchorGo.transform.parent == null)
+        {
+            Debug.LogWarning("[ArtRevamp] Credit content canvas not found.");
+            return;
+        }
+        var root = anchorGo.transform.parent;
+        var scaler =
+            root.GetComponentInParent<CanvasScaler>() ?? Object.FindObjectOfType<CanvasScaler>();
+
+        // Remove leftovers from a previous run SCENE-WIDE — an earlier version parented these onto the
+        // fade canvas, so RemoveChild(root, …) alone can't reach them and the old card keeps covering
+        // everything.
+        foreach (
+            var junk in new[] { "CreditCard", "CreditCardShadow", "CreditHeart", "CreditConfetti" }
+        )
+        {
+            var g = Find(scene, junk);
+            while (g != null)
+            {
+                Object.DestroyImmediate(g);
+                g = Find(scene, junk);
+            }
+        }
+        float refW = scaler ? scaler.referenceResolution.x : 1920f;
+        float refH = scaler ? scaler.referenceResolution.y : 1080f;
+        var rose = TextPlum;
+        float cw = refW * 0.52f,
+            ch = refH * 0.8f;
+
+        // Background → kawaii sky (full-screen), behind everything.
+        var bgGo = Find(scene, "Background");
+        if (bgGo != null && bgGo.TryGetComponent(out Image bgImg))
+        {
+            bgImg.sprite = Load("bg_menu.png");
+            bgImg.type = Image.Type.Simple;
+            bgImg.color = Color.white;
+            var rt = bgImg.rectTransform;
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+            bgGo.transform.SetAsFirstSibling();
+        }
+
+        // Soft cream card behind the content.
+        var card = AddCard(
+            root,
+            "CreditCard",
+            new Vector2(0.24f, 0.09f),
+            new Vector2(0.76f, 0.91f)
+        );
+
+        // Gentle heart/star confetti, clipped to the card.
+        RemoveChild(root.gameObject, "CreditConfetti");
+        var confetti = new GameObject(
+            "CreditConfetti",
+            typeof(RectTransform),
+            typeof(RectMask2D),
+            typeof(WinConfetti)
+        );
+        confetti.transform.SetParent(root, false);
+        var cfrt = confetti.GetComponent<RectTransform>();
+        cfrt.anchorMin = cfrt.anchorMax = new Vector2(0.5f, 0.5f);
+        cfrt.pivot = new Vector2(0.5f, 0.5f);
+        cfrt.sizeDelta = new Vector2(cw, ch);
+        cfrt.anchoredPosition = Vector2.zero;
+        confetti.transform.SetSiblingIndex(card.transform.GetSiblingIndex() + 1);
+        var cf = confetti.GetComponent<WinConfetti>();
+        cf.pieces = new[] { Load("icon_heart.png"), Load("icon_star.png") };
+        cf.colors = new[]
+        {
+            new Color(1f, 0.5f, 0.66f),
+            new Color(1f, 0.82f, 0.3f),
+            new Color(0.62f, 0.82f, 1f),
+            new Color(1f, 0.78f, 0.86f),
+        };
+        cf.count = 9;
+        cf.sizeRange = new Vector2(9f, 16f);
+
+        // Title
+        var thanks = Find(scene, "Thanks");
+        if (thanks != null)
+        {
+            CenterCreditText(
+                thanks,
+                new Vector2(0f, ch * 0.377f),
+                new Vector2(cw * 0.92f, ch * 0.2f)
+            );
+            if (thanks.TryGetComponent(out TMP_Text tt))
+            {
+                tt.text = "THANKS FOR PLAYING!";
+                tt.color = rose;
+                tt.fontStyle = FontStyles.Bold;
+                tt.enableAutoSizing = false;
+                tt.fontSize = refH * 0.062f;
+                tt.alignment = TextAlignmentOptions.Center;
+            }
+        }
+
+        // The two soulmates (NEW slime art) + a floating heart between them.
+        PlaceCreditSlime(
+            Find(scene, "Player1Image"),
+            -cw * 0.21f,
+            ch * 0.088f,
+            1.5f,
+            LoadChar("char_boy_front")
+        );
+        PlaceCreditSlime(
+            Find(scene, "Player2Image"),
+            cw * 0.21f,
+            ch * 0.088f,
+            1.85f,
+            LoadChar("char_girl_front")
+        );
+        // ...and let them blink, same as the win screen.
+        WinSlimeBlink(Find(scene, "Player1Image")?.transform, "char_boy_front", "char_boy_blink");
+        WinSlimeBlink(Find(scene, "Player2Image")?.transform, "char_girl_front", "char_girl_blink");
+
+        RemoveChild(root.gameObject, "CreditHeart");
+        var heart = MakeImage(root, "CreditHeart", Heart3D(), Color.white);
+        var hrt = heart.GetComponent<RectTransform>();
+        hrt.anchorMin = hrt.anchorMax = new Vector2(0.5f, 0.5f);
+        hrt.pivot = new Vector2(0.5f, 0.5f);
+        hrt.sizeDelta = new Vector2(84f, 84f);
+        hrt.anchoredPosition = new Vector2(0f, ch * 0.138f);
+        heart.GetComponent<Image>().preserveAspect = true;
+        var hbob = heart.AddComponent<FloatBob>();
+        hbob.amount = 8f;
+        hbob.speed = 1.6f;
+        hbob.scaleAmount = 0.07f;
+        heart.transform.SetAsLastSibling();
+
+        // "MADE BY" + the developer handle.
+        var madeBy = Find(scene, "MadeBy");
+        if (madeBy != null)
+        {
+            CenterCreditText(
+                madeBy,
+                new Vector2(0f, -ch * 0.123f),
+                new Vector2(cw * 0.8f, ch * 0.09f)
+            );
+            if (madeBy.TryGetComponent(out TMP_Text mt))
+            {
+                mt.text = "MADE BY";
+                mt.color = rose;
+                mt.enableAutoSizing = false;
+                mt.fontSize = refH * 0.03f;
+                mt.characterSpacing = 8f;
+                mt.alignment = TextAlignmentOptions.Center;
+            }
+        }
+        var devName = Find(scene, "DeveloperName");
+        if (devName != null)
+        {
+            CenterCreditText(
+                devName,
+                new Vector2(0f, -ch * 0.202f),
+                new Vector2(cw * 0.8f, ch * 0.14f)
+            );
+            if (devName.TryGetComponent(out TMP_Text dt))
+            {
+                dt.color = Accent;
+                dt.fontStyle = FontStyles.Bold;
+                dt.enableAutoSizing = false;
+                dt.fontSize = refH * 0.052f;
+                dt.alignment = TextAlignmentOptions.Center;
+            }
+        }
+
+        // Main Menu → coral pill with a white centred label.
+        var menuBtn = Find(scene, "MainMenuButton");
+        if (menuBtn != null)
+        {
+            var brt = menuBtn.GetComponent<RectTransform>();
+            brt.anchorMin = brt.anchorMax = new Vector2(0.5f, 0.5f);
+            brt.pivot = new Vector2(0.5f, 0.5f);
+            brt.sizeDelta = new Vector2(refW * 0.26f, refH * 0.1f);
+            brt.anchoredPosition = new Vector2(0f, -ch * 0.363f); // clear of both the name and the bottom edge
+            RemoveChild(menuBtn, "Icon");
+            SkinButton(menuBtn, null, false);
+            foreach (var t in menuBtn.GetComponentsInChildren<TMP_Text>(true))
+            {
+                t.color = Color.white;
+                t.alignment = TextAlignmentOptions.Center;
+            }
+            foreach (var t in menuBtn.GetComponentsInChildren<Text>(true))
+            {
+                t.color = Color.white;
+                t.alignment = TextAnchor.MiddleCenter;
+            }
+            menuBtn.transform.SetAsLastSibling();
+        }
+
+        // Explicit layering (all in the SAME content canvas now): sky at the back, then card + its
+        // shadow + confetti, then every content object on top (they were SetAsLastSibling above).
+        if (bgGo != null)
+            bgGo.transform.SetAsFirstSibling();
+        var cardShadow = Find(scene, "CreditCardShadow");
+        if (cardShadow != null)
+            cardShadow.transform.SetSiblingIndex(1);
+        card.transform.SetSiblingIndex(2);
+        confetti.transform.SetSiblingIndex(3);
+
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+        Debug.Log("[ArtRevamp] Credit screen revamped (Soft Candy). Open Credit.unity to review.");
+    }
+
+    static void CenterCreditText(GameObject go, Vector2 pos, Vector2 size)
+    {
+        foreach (var f in go.GetComponents<ContentSizeFitter>())
+            Object.DestroyImmediate(f); // don't let a fitter fight our size
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta = size;
+        rt.anchoredPosition = pos;
+        rt.localScale = Vector3.one;
+        go.transform.SetAsLastSibling();
+    }
+
+    static void PlaceCreditSlime(GameObject go, float x, float y, float speed, Sprite sprite)
+    {
+        if (go == null)
+            return;
+        if (!go.activeSelf)
+            go.SetActive(true);
+        foreach (var f in go.GetComponents<ContentSizeFitter>())
+            Object.DestroyImmediate(f);
+        var rt = go.GetComponent<RectTransform>();
+        rt.localScale = Vector3.one;
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta = new Vector2(168f, 187f);
+        rt.anchoredPosition = new Vector2(x, y);
+        if (go.TryGetComponent(out Image img))
+        {
+            if (sprite != null)
+                img.sprite = sprite; // NEW slime art (was old character / a broken white sprite)
+            img.color = Color.white;
+            img.preserveAspect = true;
+        }
+        var bob = go.GetComponent<FloatBob>() ?? go.AddComponent<FloatBob>();
+        bob.amount = 8f;
+        bob.speed = speed;
+        bob.scaleAmount = 0.03f;
+        go.transform.SetAsLastSibling();
+    }
 
     // ---- 2. Scene wiring -------------------------------------------------
     static void WireMenu()

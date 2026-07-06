@@ -9946,6 +9946,10 @@ PrefabInstance:
       value: Game Controller
       objectReference: {fileID: 0}
     - target: {fileID: 9201377402895100606, guid: b073f193e2c01004e81ffddd8e28680c, type: 3}
+      propertyPath: timeParSeconds
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 9201377402895100606, guid: b073f193e2c01004e81ffddd8e28680c, type: 3}
       propertyPath: completeLevelUI
       value: 
       objectReference: {fileID: 584532303}

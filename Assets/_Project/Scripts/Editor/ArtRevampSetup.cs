@@ -3091,8 +3091,9 @@ public static class ArtRevampSetup
             var cream = new Color(1f, 0.96f, 0.92f); // soft cream tile — matches the kit cards
             var rose = TextPlum; // wine-rose number, same as the headings
             var levelButtons = grid.GetComponentsInChildren<Button>(true);
-            foreach (var b in levelButtons)
+            for (int li = 0; li < levelButtons.Length; li++)
             {
+                var b = levelButtons[li];
                 var img = (b.targetGraphic as Image) ?? b.GetComponent<Image>();
                 if (img != null)
                 {
@@ -3124,6 +3125,8 @@ public static class ArtRevampSetup
                 }
                 if (b.GetComponent<ButtonBounce>() == null)
                     b.gameObject.AddComponent<ButtonBounce>(); // hover-bounce on level tiles too
+
+                AddLevelStars(b.gameObject, li + 1); // saved rating row (Level01 = build index 1)
             }
         }
         else
@@ -3143,6 +3146,45 @@ public static class ArtRevampSetup
             brt.anchoredPosition = new Vector2(refW * 0.03f, -refH * 0.03f);
             SkinButton(backT.gameObject, btn, false);
         }
+    }
+
+    // Add a small 3-star rating row to a level-select button. LevelStars lights up the saved rating
+    // (from SaveSystem) at runtime and hides the row while the level is locked.
+    static void AddLevelStars(GameObject button, int buildIndex)
+    {
+        RemoveChild(button, "LevelStars");
+        var row = new GameObject("LevelStars", typeof(RectTransform), typeof(LevelStars));
+        row.transform.SetParent(button.transform, false);
+        var rrt = row.GetComponent<RectTransform>();
+        rrt.anchorMin = rrt.anchorMax = new Vector2(0.5f, 0f); // bottom-centre of the tile
+        rrt.pivot = new Vector2(0.5f, 0f);
+        rrt.sizeDelta = new Vector2(70f, 22f);
+        rrt.anchoredPosition = new Vector2(0f, 7f);
+
+        var starSprite = Load("star_3d.png") ?? Load("icon_star.png");
+        const float sz = 18f,
+            gap = 4f;
+        var imgs = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            var s = MakeImage(row.transform, "Star" + i, starSprite, Color.white);
+            var srt = s.GetComponent<RectTransform>();
+            srt.anchorMin = srt.anchorMax = new Vector2(0.5f, 0.5f);
+            srt.pivot = new Vector2(0.5f, 0.5f);
+            srt.sizeDelta = new Vector2(sz, sz);
+            srt.anchoredPosition = new Vector2((i - 1) * (sz + gap), 0f);
+            var im = s.GetComponent<Image>();
+            im.preserveAspect = true;
+            im.raycastTarget = false;
+            imgs[i] = im;
+        }
+
+        var ls = row.GetComponent<LevelStars>();
+        ls.buildIndex = buildIndex;
+        ls.stars = imgs;
+        ls.earnedColor = Color.white;
+        ls.emptyColor = new Color(0.55f, 0.5f, 0.55f, 0.6f);
+        row.transform.SetAsLastSibling(); // above the tile number
     }
 
     // Reskin the Options panel: card background, pink sliders, plum text, Back button.

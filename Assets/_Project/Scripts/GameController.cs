@@ -130,6 +130,9 @@ public class GameController : MonoBehaviour
             if (stars != null)
                 stars.earned = earned;
 
+            // Persist the best rating so it shows on the level-select map.
+            SaveSystem.SaveStars(SceneManager.GetActiveScene().buildIndex, earned);
+
             completeLevelUI.SetActive(true);
             AudioManager.instance?.Play("LevelComplete"); // both soulmates home → celebration
 

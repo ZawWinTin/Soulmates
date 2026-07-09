@@ -3148,43 +3148,68 @@ public static class ArtRevampSetup
         }
     }
 
-    // Add a small 3-star rating row to a level-select button. LevelStars lights up the saved rating
-    // (from SaveSystem) at runtime and hides the row while the level is locked.
+    // "Crown" a level-select button with its 3-star rating: the stars pop up and overlap the TOP edge
+    // of the tile (middle star raised into a little arc), number stays centred below. LevelStars
+    // lights up the saved rating and hides the crown while the level is locked.
     static void AddLevelStars(GameObject button, int buildIndex)
     {
         RemoveChild(button, "LevelStars");
+        var brt = button.GetComponent<RectTransform>();
+        float bh = brt.sizeDelta.y > 1f ? brt.sizeDelta.y : 100f;
+        float bw = brt.sizeDelta.x > 1f ? brt.sizeDelta.x : 110f;
+
+        // Keep the number centred (idempotent) — the crown lives above the tile, so it doesn't compete.
+        foreach (var t in button.GetComponentsInChildren<TMP_Text>(true))
+            t.rectTransform.anchoredPosition = new Vector2(
+                t.rectTransform.anchoredPosition.x,
+                -bh * 0.04f
+            );
+        foreach (var t in button.GetComponentsInChildren<Text>(true))
+            t.rectTransform.anchoredPosition = new Vector2(
+                t.rectTransform.anchoredPosition.x,
+                -bh * 0.04f
+            );
+
+        // Crown row anchored to the TOP edge; the stars straddle/pop above it.
         var row = new GameObject("LevelStars", typeof(RectTransform), typeof(LevelStars));
         row.transform.SetParent(button.transform, false);
         var rrt = row.GetComponent<RectTransform>();
-        rrt.anchorMin = rrt.anchorMax = new Vector2(0.5f, 0f); // bottom-centre of the tile
-        rrt.pivot = new Vector2(0.5f, 0f);
-        rrt.sizeDelta = new Vector2(70f, 22f);
-        rrt.anchoredPosition = new Vector2(0f, 7f);
+        rrt.anchorMin = rrt.anchorMax = new Vector2(0.5f, 1f); // top-centre
+        rrt.pivot = new Vector2(0.5f, 0.5f);
+        rrt.sizeDelta = new Vector2(bw * 0.8f, bh * 0.3f);
+        rrt.anchoredPosition = new Vector2(0f, -bh * 0.03f); // sit ON the top edge, straddling it
 
         var starSprite = Load("star_3d.png") ?? Load("icon_star.png");
-        const float sz = 18f,
-            gap = 4f;
+        float sz = bh * 0.2f,
+            gap = sz * 0.18f;
         var imgs = new Image[3];
         for (int i = 0; i < 3; i++)
         {
-            var s = MakeImage(row.transform, "Star" + i, starSprite, Color.white);
-            var srt = s.GetComponent<RectTransform>();
+            bool mid = i == 1;
+            float s = mid ? sz * 1.18f : sz; // middle star a touch bigger → crown
+            var go = MakeImage(row.transform, "Star" + i, starSprite, Color.white);
+            var srt = go.GetComponent<RectTransform>();
             srt.anchorMin = srt.anchorMax = new Vector2(0.5f, 0.5f);
             srt.pivot = new Vector2(0.5f, 0.5f);
-            srt.sizeDelta = new Vector2(sz, sz);
-            srt.anchoredPosition = new Vector2((i - 1) * (sz + gap), 0f);
-            var im = s.GetComponent<Image>();
+            srt.sizeDelta = new Vector2(s, s);
+            srt.anchoredPosition = new Vector2(
+                (i - 1) * (sz + gap),
+                mid ? sz * 0.18f : 0f // lift the middle star into an arc
+            );
+            var im = go.GetComponent<Image>();
             im.preserveAspect = true;
             im.raycastTarget = false;
             imgs[i] = im;
         }
+        row.transform.GetChild(1).SetAsLastSibling(); // middle star on top where they overlap
 
         var ls = row.GetComponent<LevelStars>();
         ls.buildIndex = buildIndex;
         ls.stars = imgs;
+        ls.background = null; // no band in the crown style
         ls.earnedColor = Color.white;
-        ls.emptyColor = new Color(0.55f, 0.5f, 0.55f, 0.6f);
-        row.transform.SetAsLastSibling(); // above the tile number
+        ls.emptyColor = new Color(0.66f, 0.61f, 0.63f, 1f); // SOLID grey (opaque) — straddles the edge without showing panel/sky through it
+        row.transform.SetAsLastSibling();
     }
 
     // Reskin the Options panel: card background, pink sliders, plum text, Back button.

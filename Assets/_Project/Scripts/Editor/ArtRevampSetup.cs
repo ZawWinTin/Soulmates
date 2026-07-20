@@ -411,7 +411,7 @@ public static class ArtRevampSetup
         var sr = starGo.GetComponent<SpriteRenderer>();
         sr.sprite = starSprite;
         sr.sortingLayerName = "Default";
-        sr.sortingOrder = 500;
+        sr.sortingOrder = 2; // SAME order as the slimes → the camera's transparency-sort axis handles iso depth
         float srcH = starSprite != null ? starSprite.bounds.size.y : 0f;
         starGo.transform.localScale = Vector3.one * (srcH > 0.001f ? 0.44f / srcH : 0.18f); // ~0.44u, a bit smaller
         starGo.transform.localPosition = new Vector3(0f, StarHover, 0f); // float above the tile top
@@ -457,7 +457,10 @@ public static class ArtRevampSetup
         var vel = ps.velocityOverLifetime;
         vel.enabled = true;
         vel.space = ParticleSystemSimulationSpace.Local;
+        // All 3 axes MUST share the same curve mode (TwoConstants) or Unity errors every frame.
+        vel.x = new ParticleSystem.MinMaxCurve(0f, 0f);
         vel.y = new ParticleSystem.MinMaxCurve(0.12f, 0.3f); // drift up
+        vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
         var col = ps.colorOverLifetime;
         col.enabled = true;
         var grad = new Gradient();
@@ -475,7 +478,7 @@ public static class ArtRevampSetup
         psr.renderMode = ParticleSystemRenderMode.Billboard;
         psr.sharedMaterial = sparkleMat;
         psr.sortingLayerName = "Default";
-        psr.sortingOrder = 501;
+        psr.sortingOrder = 2; // sparkles just above the star
         ps.Play();
 
         // Soft ground shadow (child so it follows drags; the bob is tiny so it barely moves).
@@ -491,8 +494,10 @@ public static class ArtRevampSetup
                 shr.sharedMaterial = shadowMaterial;
             shr.color = new Color(0f, 0f, 0f, 0.32f);
             shr.sortingLayerName = "Default";
-            shr.sortingOrder = 499; // just under the star
+            shr.sortingOrder = 0; // ground level, under the star
         }
+
+        // (Depth sorting vs the slimes is handled at runtime by StarPickup — no wiring needed.)
 
         // Sit it on the nearest tile's centre-top, like the slimes (keeps its spot, fixes alignment).
         SnapStarToTile(root.transform, pos);
@@ -651,15 +656,15 @@ public static class ArtRevampSetup
     {
         var pars = new[]
         {
-            ("Level01", 20f),
-            ("Level02", 25f),
-            ("Level03", 30f),
-            ("Level04", 35f),
-            ("Level05", 40f),
-            ("Level06", 45f),
-            ("Level07", 50f),
+            ("Level01", 15f), // playtested pars (generous vs actual solve times)
+            ("Level02", 20f),
+            ("Level03", 25f),
+            ("Level04", 20f),
+            ("Level05", 30f),
+            ("Level06", 30f), // all playtested
+            ("Level07", 70f),
             ("Level08", 55f),
-            ("Level09", 60f),
+            ("Level09", 45f),
         };
 
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
@@ -686,6 +691,58 @@ public static class ArtRevampSetup
         if (!string.IsNullOrEmpty(current))
             EditorSceneManager.OpenScene(current);
         Debug.Log($"[ArtRevamp] Time-star pars set on {done}/9 levels.");
+    }
+
+    // Fix already-baked collectible stars in place (no repositioning): (1) the sparkle particle system
+    // logged "Particle Velocity curves must all be in the same mode" — set all 3 axes to the same mode;
+    // (2) the star's sorting order was 500 (always drew over slimes) — bring it into the world range so
+    // iso depth sorts it via the custom axis.
+    [MenuItem("Tools/Soulmates/Fix Collectible Stars (all levels)")]
+    public static void FixCollectStarParticles()
+    {
+        if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            return;
+        string current = EditorSceneManager.GetActiveScene().path;
+        int done = 0;
+        foreach (var n in new[] { "01", "02", "03", "04", "05", "06", "07", "08", "09" })
+        {
+            var scene = EditorSceneManager.OpenScene(
+                $"Assets/_Project/Scenes/Level{n}.unity",
+                OpenSceneMode.Single
+            );
+            var star = GameObject.Find("CollectStar");
+            if (star == null)
+                continue;
+
+            // sorting: was 500 (always on top of slimes) → order 2, SAME as the slimes, so the camera's
+            // transparency-sort axis sorts the star by iso depth (front/behind) automatically.
+            var starSR = star.transform.Find("Star")?.GetComponent<SpriteRenderer>();
+            if (starSR != null)
+                starSR.sortingOrder = 2;
+            var shadowSR = star.transform.Find("StarShadow")?.GetComponent<SpriteRenderer>();
+            if (shadowSR != null)
+                shadowSR.sortingOrder = 0;
+
+            // (Depth sorting vs the slimes is handled at runtime by StarPickup — no wiring needed.)
+            var ps = star.GetComponentInChildren<ParticleSystem>(true);
+            if (ps != null)
+            {
+                var vel = ps.velocityOverLifetime;
+                vel.enabled = true;
+                vel.space = ParticleSystemSimulationSpace.Local;
+                vel.x = new ParticleSystem.MinMaxCurve(0f, 0f);
+                vel.y = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
+                vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+                EditorUtility.SetDirty(ps);
+            }
+
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            done++;
+        }
+        if (!string.IsNullOrEmpty(current))
+            EditorSceneManager.OpenScene(current);
+        Debug.Log($"[ArtRevamp] Fixed CollectStar particles + sorting on {done}/9 levels.");
     }
 
     // Unlit material carrying the sparkle twinkle texture, for the collectible star's particle system.

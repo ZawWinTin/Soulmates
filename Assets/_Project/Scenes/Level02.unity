@@ -194,7 +194,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 500
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 154ffd8f47ab54659a83dd345f5594d2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -294,7 +294,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 499
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: c362a1b71735a41a2b41c7c22bc4e8a4, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 0.32}
   m_FlipX: 0
@@ -380,7 +380,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 501
+  m_SortingOrder: 3
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -1874,7 +1874,7 @@ ParticleSystem:
     enabled: 1
     x:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 0
       minScalar: 0
       maxCurve:
@@ -1980,7 +1980,7 @@ ParticleSystem:
         m_RotationOrder: 4
     z:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 0
       minScalar: 0
       maxCurve:
@@ -5146,6 +5146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1379063707}
   - component: {fileID: 1379063708}
+  - component: {fileID: 1379063709}
   m_Layer: 0
   m_Name: CollectStar
   m_TagString: Untagged
@@ -5189,6 +5190,22 @@ MonoBehaviour:
   bobSpeed: 2
   swayDegrees: 8
   visual: {fileID: 86959775}
+  slimeOrder: 2
+--- !u!114 &1379063709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379063706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c3638f370c045a7abd9093239edd32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 86959776}
+  sparkles: {fileID: 1225882071}
+  slimeOrder: 2
 --- !u!1 &1387096992
 GameObject:
   m_ObjectHideFlags: 0
@@ -9734,7 +9751,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9201377402895100606, guid: b073f193e2c01004e81ffddd8e28680c, type: 3}
       propertyPath: timeParSeconds
-      value: 25
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 9201377402895100606, guid: b073f193e2c01004e81ffddd8e28680c, type: 3}
       propertyPath: completeLevelUI

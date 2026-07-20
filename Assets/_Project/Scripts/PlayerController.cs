@@ -329,12 +329,14 @@ public class PlayerController : MonoBehaviour
             {
                 StartCoroutine(DissolveWinTile(winTile1));
                 StopWinTileParticles(winTile1); // safe: no crash if the child layout differs
+                AudioManager.instance?.Play("WrongTile"); // wrong-colour tile crumbles → mistake cue
                 FindObjectOfType<GameController>().GameOver();
             }
             if (playerLastPosition == groundTilemap.WorldToCell(winTile2.transform.position))
             {
                 StartCoroutine(DissolveWinTile(winTile2));
                 StopWinTileParticles(winTile2);
+                AudioManager.instance?.Play("WrongTile"); // wrong-colour tile crumbles → mistake cue
                 FindObjectOfType<GameController>().GameOver();
             }
             StartCoroutine(

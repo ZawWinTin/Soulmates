@@ -115,4 +115,11 @@ MonoBehaviour:
     loop: 0
     audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
     source: {fileID: 0}
+  - name: WrongTile
+    clip: {fileID: 8300000, guid: 18293a4b5c6d7e8f901a2b3c4d5e6f70, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    audioMixerGroup: {fileID: 8469199666534321985, guid: 78bde42d46136ed47b336cb94db9dc65, type: 2}
+    source: {fileID: 0}
   audioMixer: {fileID: 0}

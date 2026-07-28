@@ -53,6 +53,10 @@ public static class SaveSystem
         Debug.Log("Saved at: " + path);
         using (FileStream stream = new FileStream(path, FileMode.Create))
             formatter.Serialize(stream, data);
+
+        // Every successful local save also goes to the z-games site as a cloud
+        // save (WebGL only — it's a harmless Debug.Log everywhere else).
+        GameBridge.NotifyProgressSaved();
     }
 
     // Old save files predate the stars[] field → it deserializes as null. Rebuild it so indexing is safe.

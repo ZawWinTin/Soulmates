@@ -16,6 +16,14 @@ public class PlayOptions : MonoBehaviour
         LoadLevel();
     }
 
+    // Re-read progress and re-evaluate the level buttons. Called by GameBridge
+    // after a cloud save is merged in — the menu is built at Awake (before the
+    // cloud save arrives), so without this the restored progress never shows.
+    public void RefreshLevels()
+    {
+        LoadLevel();
+    }
+
     private void LoadLevel()
     {
         data = SaveSystem.LoadData();

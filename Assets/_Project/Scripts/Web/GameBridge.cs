@@ -52,6 +52,13 @@ public class GameBridge : MonoBehaviour
     // site mid-merge (one combined event is sent at the end instead).
     static bool suppressNotify = false;
 
+    // False until the site has sent its first LoadData. Local writes before that
+    // (e.g. PlayOptions saving the default "level 1" for a new player at menu
+    // Awake) must NOT be pushed to the cloud yet — doing so would overwrite the
+    // real cloud save before we've had a chance to load it. Once the cloud copy
+    // has been merged in, saves flow to the site normally.
+    static bool cloudLoaded = false;
+
     // Runs automatically after the first scene loads — no scene/prefab wiring
     // needed. Creates the "GameBridge" GameObject the site sends messages to.
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -105,6 +112,7 @@ public class GameBridge : MonoBehaviour
         if (string.IsNullOrEmpty(json))
         {
             Debug.Log("GameBridge: no cloud save (fresh game or guest)");
+            cloudLoaded = true; // nothing to merge, but local saves may now sync
             return;
         }
 
@@ -153,10 +161,28 @@ public class GameBridge : MonoBehaviour
             suppressNotify = false;
         }
 
+        // From here on, local saves are allowed to sync to the cloud — the cloud
+        // copy has been loaded, so we can no longer clobber it.
+        cloudLoaded = true;
+
         // If the merge improved local state, echo the combined result back so the
-        // cloud copy is updated to the merged progress too.
+        // cloud copy is updated to the merged progress too, and refresh the level
+        // menu — it was built at Awake, before this cloud save arrived.
         if (changed)
+        {
             NotifyProgressSaved();
+            RefreshMenu();
+        }
+    }
+
+    // Re-evaluate the level-select menu after a cloud merge so restored progress
+    // (unlocked levels / stars) shows immediately instead of only after a scene
+    // reload. No-op when the menu isn't the active scene.
+    static void RefreshMenu()
+    {
+        PlayOptions menu = Object.FindObjectOfType<PlayOptions>();
+        if (menu != null)
+            menu.RefreshLevels();
     }
 
     // Who is playing. Payload: { "isGuest": bool, "userName": string? }.
@@ -191,6 +217,12 @@ public class GameBridge : MonoBehaviour
     public static void NotifyProgressSaved()
     {
         if (suppressNotify)
+            return;
+
+        // Don't push local writes to the cloud until the cloud save has been
+        // loaded — otherwise a new player's default "level 1" (written at menu
+        // Awake) could overwrite real cloud progress before it's fetched.
+        if (!cloudLoaded)
             return;
 
         SavedData local = SaveSystem.LoadData();

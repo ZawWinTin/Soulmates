@@ -68,3 +68,6 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
+# Per-user editor state (window layouts etc.) — machine-local, not project data
+UserSettings/

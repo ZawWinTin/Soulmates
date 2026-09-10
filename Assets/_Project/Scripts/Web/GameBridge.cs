@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 // The z-games site (react-unity-webgl) talks to this object by name:
 //     sendMessage("GameBridge", "LoadData", json)   // push cloud save into game
 //     sendMessage("GameBridge", "SetContext", json) // who is playing (guest?)
+//     sendMessage("GameBridge", "SetDevice", json)  // what they're playing ON
 // and Unity talks back through Assets/Plugins/WebGL/ZGamesBridge.jslib:
 //     "Ready"    — emitted once on boot (site then sends SetContext + LoadData)
 //     "SaveData" — emitted with the progress blob whenever local progress saves
@@ -43,6 +44,31 @@ public class GameBridge : MonoBehaviour
     // Defaults to guest until the site tells us otherwise (conservative).
     public static bool IsGuest { get; private set; } = true;
     public static string UserName { get; private set; } = null;
+
+    // ── Device pushed by the site via SetDevice ──────────────────────────────────
+    // We CANNOT work this out from inside the build: in WebGL,
+    // Application.isMobilePlatform is false and SystemInfo.deviceType returns
+    // Desktop even on a phone, and Touchscreen.current is non-null on any
+    // touchscreen laptop. Only the browser knows, so it tells us — on boot and
+    // again whenever it changes (rotation, a keyboard being paired).
+    //
+    // Read IsTouch to decide whether to show on-screen controls, and subscribe
+    // to DeviceChanged to react while running:
+    //     void OnEnable()  { GameBridge.DeviceChanged += Apply; Apply(); }
+    //     void OnDisable() { GameBridge.DeviceChanged -= Apply; }
+    //     void Apply()     { pad.SetActive(GameBridge.IsTouch); }
+    //
+    // Keyboard input must keep working when IsTouch is true — hybrid devices
+    // are real, and "does a physical keyboard exist" is not detectable.
+    public static bool IsTouch { get; private set; } = false;
+    public static bool IsPortrait { get; private set; } = false;
+
+    /// Raised after SetDevice changes IsTouch or IsPortrait. Static, because the
+    /// bridge outlives every scene — unsubscribe in OnDisable.
+    ///
+    /// Fully qualified, like System.Exception below: a bare `using System;`
+    /// makes `Object` ambiguous with UnityEngine.Object (CS0104) further down.
+    public static event System.Action DeviceChanged;
 
     static GameBridge instance;
 
@@ -98,6 +124,13 @@ public class GameBridge : MonoBehaviour
     {
         public bool isGuest = true;
         public string userName; // may be absent in the JSON → stays null
+    }
+
+    [System.Serializable]
+    public class DeviceBlob
+    {
+        public bool isTouch = false;
+        public bool isPortrait = false;
     }
 
     // ── JS → Unity (called by the site via SendMessage — names are the contract) ─
@@ -205,6 +238,47 @@ public class GameBridge : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogWarning("GameBridge: could not parse context, ignoring. " + e.Message);
+        }
+    }
+
+    // What they're playing on. Payload: { "isTouch": bool, "isPortrait": bool }.
+    // Sent on boot AND on every change, so this must stay idempotent — it fires
+    // DeviceChanged only when a value actually moved.
+    public void SetDevice(string json)
+    {
+        if (string.IsNullOrEmpty(json))
+            return;
+
+        DeviceBlob device;
+        try
+        {
+            device = JsonUtility.FromJson<DeviceBlob>(json);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("GameBridge: could not parse device, ignoring. " + e.Message);
+            return;
+        }
+        if (device == null)
+            return;
+
+        bool changed = device.isTouch != IsTouch || device.isPortrait != IsPortrait;
+        IsTouch = device.isTouch;
+        IsPortrait = device.isPortrait;
+
+        if (!changed)
+            return;
+
+        // A listener throwing must not take the bridge down with it — the site
+        // gets no feedback from SendMessage, so a swallowed exception here would
+        // look like the message never arrived.
+        try
+        {
+            DeviceChanged?.Invoke();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("GameBridge: a DeviceChanged listener threw. " + e.Message);
         }
     }
 

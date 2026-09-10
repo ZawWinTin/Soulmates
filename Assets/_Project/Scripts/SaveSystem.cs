@@ -41,18 +41,53 @@ public static class SaveSystem
         if (!File.Exists(path))
             return null;
 
-        BinaryFormatter formatter = new BinaryFormatter();
-        using (FileStream stream = new FileStream(path, FileMode.Open))
-            return formatter.Deserialize(stream) as SavedData;
+        try
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            using (FileStream stream = new FileStream(path, FileMode.Open))
+                return formatter.Deserialize(stream) as SavedData;
+        }
+        catch (System.Exception e)
+        {
+            // A truncated or corrupt file must NOT throw: this is read at menu
+            // Awake (PlayOptions) and during the cloud-save merge, so an exception
+            // here breaks level-select init and cloud recovery. Treat it as "no
+            // local save" — callers fall back to defaults, and for a signed-in
+            // player the conservative cloud merge restores real progress on top.
+            // The bad file is left in place; the next successful Write replaces it.
+            Debug.LogWarning("SaveSystem: could not read save, treating as empty. " + e.Message);
+            return null;
+        }
     }
 
     static void Write(SavedData data)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = Path;
+        string tmp = path + ".tmp";
         Debug.Log("Saved at: " + path);
-        using (FileStream stream = new FileStream(path, FileMode.Create))
-            formatter.Serialize(stream, data);
+
+        // Serialize to a temp file first, then swap it in. FileMode.Create on the
+        // real path would truncate the existing save BEFORE writing — if
+        // serialization threw partway, the good save would be left corrupt. This
+        // way a failed write leaves the previous save untouched.
+        try
+        {
+            using (FileStream stream = new FileStream(tmp, FileMode.Create))
+                formatter.Serialize(stream, data);
+
+            if (File.Exists(path))
+                File.Delete(path);
+            File.Move(tmp, path);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("SaveSystem: write failed, keeping previous save. " + e.Message);
+            try { if (File.Exists(tmp)) File.Delete(tmp); } catch { }
+            // The write didn't happen — do NOT notify the cloud, or last-write-wins
+            // on z-core could overwrite good progress with a save we never made.
+            return;
+        }
 
         // Every successful local save also goes to the z-games site as a cloud
         // save (WebGL only — it's a harmless Debug.Log everywhere else).

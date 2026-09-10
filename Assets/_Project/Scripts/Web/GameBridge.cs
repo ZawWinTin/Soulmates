@@ -300,9 +300,18 @@ public class GameBridge : MonoBehaviour
             return;
 
         SavedData local = SaveSystem.LoadData();
+        if (local == null)
+        {
+            // Local is missing or unreadable (corrupt file). Pushing a zeroed blob
+            // now would, under the cloud's last-write-wins, clobber good progress
+            // on z-core. Skip — a real save syncs once local is readable again.
+            Debug.LogWarning("GameBridge: skipping cloud sync — no readable local save.");
+            return;
+        }
+
         ProgressBlob blob = new ProgressBlob();
-        blob.level = local != null ? local.level : 0;
-        blob.stars = (local != null && local.stars != null) ? local.stars : new int[32];
+        blob.level = local.level;
+        blob.stars = local.stars != null ? local.stars : new int[32];
 
         string json = JsonUtility.ToJson(blob);
 

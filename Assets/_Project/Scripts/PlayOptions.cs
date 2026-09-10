@@ -44,15 +44,23 @@ public class PlayOptions : MonoBehaviour
         GameObject[] levelButtons = GameObject.FindGameObjectsWithTag("LevelButton");
         for (int i = 0; i < levelButtons.Length; i++)
         {
-            //Level Start from 1
-            if (i + 1 <= playableLevel)
-            {
-                levelButtons[i].GetComponent<Button>().interactable = true;
-            }
-            else
-            {
-                levelButtons[i].GetComponent<Button>().interactable = false;
-            }
+            // Unlock by the level's OWN index, never its position in the array:
+            // FindGameObjectsWithTag order is unspecified, so keying off `i` could
+            // unlock the wrong buttons. LevelStars.buildIndex is the level number
+            // (Level01 = 1 … Level09 = 9).
+            LevelStars levelStars = levelButtons[i].GetComponentInChildren<LevelStars>(true);
+            int levelIndex = levelStars != null ? levelStars.buildIndex : i + 1;
+            if (levelStars == null)
+                Debug.LogWarning("PlayOptions: LevelButton '" + levelButtons[i].name
+                    + "' has no LevelStars; falling back to array order.");
+
+            levelButtons[i].GetComponent<Button>().interactable = levelIndex <= playableLevel;
+
+            // Reflect the new lock state in the star band right away — it reads
+            // button.interactable, and the buttons may already be on screen (e.g.
+            // a cloud merge calling RefreshLevels while the level menu is open).
+            if (levelStars != null)
+                levelStars.Refresh();
         }
         playMenu.SetActive(false);
     }

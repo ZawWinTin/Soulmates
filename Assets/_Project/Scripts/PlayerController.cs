@@ -218,8 +218,6 @@ public class PlayerController : MonoBehaviour
         Vector2 movePosition;
         if (!isMoving && !isFlipping && rigidBody2D.gravityScale == 0 && Time.timeScale == 1)
         {
-            funTimer = 0f; // restart the idle countdown — the backflip only plays after a quiet spell
-            playerNextDirection = direction;
             //Specify Position to Move
             switch (direction)
             {
@@ -240,9 +238,17 @@ public class PlayerController : MonoBehaviour
                     movePosition = gridMoveRight;
                     break;
                 default:
-                    movePosition = Vector2.zero;
-                    break;
+                    // Non-cardinal / zero input — e.g. a diagonal from a touch
+                    // joystick or two arrow keys pressed together. A zero-distance
+                    // move still runs GridMovement, which destroys the tile under
+                    // the (stationary) player. Reject it: no move, no destruction.
+                    return;
             }
+            // Accepted a real cardinal move — now it counts as activity: restart the
+            // idle countdown (backflip only plays after a quiet spell) and record the
+            // direction the clones compare for climb-down offsets.
+            funTimer = 0f;
+            playerNextDirection = direction;
             StartCoroutine(GridMovement(movePosition)); //Move as GridBased Movement with smoothness
             Invoke("CheckWinning", timeToMove); //Wait Movement and Check Current Player's Position for Winning or not
         }

@@ -135,57 +135,83 @@ public class GameBridge : MonoBehaviour
 
     // ── JS → Unity (called by the site via SendMessage — names are the contract) ─
 
-    // Cloud save arriving from the site. Empty string means "no cloud save".
-    // Merge is CONSERVATIVE — we only ever raise progress, never lower it:
-    //   • level: applied only if the cloud value is higher than local
-    //   • stars: per level, the higher of cloud vs local wins
-    // so playing on two devices can't wipe progress in either direction.
+    // Cloud save arriving from the site. Empty string means "no cloud save yet".
+    // Sync is CONSERVATIVE and BIDIRECTIONAL — we only ever raise progress, never
+    // lower it, in either direction:
+    //   • cloud ahead of local → local is raised (and the level menu refreshed)
+    //   • local ahead of cloud → the merged result is pushed back UP to the cloud
+    //   • empty cloud + non-empty local → local progress is uploaded as the first
+    //     cloud save (how a signed-in player's earlier offline/guest progress
+    //     reaches z-core)
+    // so playing on two devices, or signing in after playing, can't wipe progress
+    // in either direction.
     public void LoadData(string json)
     {
-        if (string.IsNullOrEmpty(json))
-        {
-            Debug.Log("GameBridge: no cloud save (fresh game or guest)");
-            cloudLoaded = true; // nothing to merge, but local saves may now sync
-            return;
-        }
-
         ProgressBlob cloud = null;
-        try
+        if (!string.IsNullOrEmpty(json))
         {
-            cloud = JsonUtility.FromJson<ProgressBlob>(json);
+            try
+            {
+                cloud = JsonUtility.FromJson<ProgressBlob>(json);
+            }
+            catch (System.Exception e)
+            {
+                // Non-empty but unreadable: we don't know the real cloud state, so
+                // stay read-only to the cloud this session (cloudLoaded stays false)
+                // rather than risk overwriting a good copy we merely failed to parse.
+                Debug.LogWarning("GameBridge: could not parse cloud save, ignoring. " + e.Message);
+                return;
+            }
+            if (cloud == null)
+            {
+                Debug.LogWarning("GameBridge: cloud save parsed to null, ignoring.");
+                return;
+            }
         }
-        catch (System.Exception e)
-        {
-            Debug.LogWarning("GameBridge: could not parse cloud save, ignoring. " + e.Message);
-            return;
-        }
-        if (cloud == null)
-            return;
+        // cloud == null here means the site reported NO cloud save (empty string).
+        // We still run the merge below so existing local progress gets pushed up.
 
-        bool changed = false;
+        int cloudLevel = cloud != null ? cloud.level : 0;
+        int[] cloudStars = (cloud != null && cloud.stars != null) ? cloud.stars : new int[0];
+
+        bool menuNeedsRefresh = false; // cloud raised local → re-render level select
+        bool cloudBehind = false;      // local holds progress the cloud lacks → upload
+
         suppressNotify = true; // batch: one SaveData event after the merge, not one per write
         try
         {
-            // Unlocked level: take the max of cloud vs local.
+            // Snapshot local BEFORE the merge writes, so the comparison stays clean.
             SavedData local = SaveSystem.LoadData();
             int localLevel = local != null ? local.level : 0;
-            if (cloud.level > localLevel)
+            int[] localStars = (local != null && local.stars != null) ? local.stars : new int[0];
+
+            // Unlocked level: max of cloud vs local, noting which side moved.
+            if (cloudLevel > localLevel)
             {
-                SaveSystem.SaveData(cloud.level);
-                changed = true;
+                SaveSystem.SaveData(cloudLevel);
+                menuNeedsRefresh = true;
+            }
+            else if (localLevel > cloudLevel)
+            {
+                cloudBehind = true;
             }
 
-            // Stars: per build index, keep the best rating. SaveSystem.SaveStars
-            // already only writes when the new count is HIGHER, so it is the max.
-            if (cloud.stars != null)
+            // Stars: compare across the UNION of both arrays, so stars the cloud
+            // is missing (its array is shorter/older) count as "local ahead" and
+            // get uploaded — not just the ones the cloud can raise.
+            int n = localStars.Length > cloudStars.Length ? localStars.Length : cloudStars.Length;
+            for (int i = 0; i < n; i++)
             {
-                for (int i = 0; i < cloud.stars.Length; i++)
+                int ls = i < localStars.Length ? localStars[i] : 0;
+                int cs = i < cloudStars.Length ? cloudStars[i] : 0;
+                if (cs > ls)
                 {
-                    if (cloud.stars[i] > SaveSystem.GetStars(i))
-                    {
-                        SaveSystem.SaveStars(i, cloud.stars[i]);
-                        changed = true;
-                    }
+                    SaveSystem.SaveStars(i, cs); // only writes when higher — it's the max
+                    menuNeedsRefresh = true;
+                }
+                else if (ls > cs)
+                {
+                    cloudBehind = true;
                 }
             }
         }
@@ -198,14 +224,14 @@ public class GameBridge : MonoBehaviour
         // copy has been loaded, so we can no longer clobber it.
         cloudLoaded = true;
 
-        // If the merge improved local state, echo the combined result back so the
-        // cloud copy is updated to the merged progress too, and refresh the level
-        // menu — it was built at Awake, before this cloud save arrived.
-        if (changed)
-        {
+        // Push the merged result UP whenever local held progress the cloud lacked
+        // (includes the empty-cloud case) — NotifyProgressSaved re-reads the now-
+        // merged local and sends it. Refresh the level menu (built at Awake, before
+        // this save arrived) whenever the cloud raised local.
+        if (cloudBehind)
             NotifyProgressSaved();
+        if (menuNeedsRefresh)
             RefreshMenu();
-        }
     }
 
     // Re-evaluate the level-select menu after a cloud merge so restored progress

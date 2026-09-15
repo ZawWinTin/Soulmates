@@ -17,6 +17,8 @@ public class Helper
         Debug.Log("Game Quit!");
 #if UNITY_WEBGL && !UNITY_EDITOR
         ZGamesNotifyExit();
+#elif UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif

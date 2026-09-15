@@ -239,6 +239,7 @@ public class GameBridge : MonoBehaviour
     // reload. No-op when the menu isn't the active scene.
     static void RefreshMenu()
     {
+        GardenInterface.Active?.RefreshProgress();
         PlayOptions menu = Object.FindObjectOfType<PlayOptions>();
         if (menu != null)
             menu.RefreshLevels();

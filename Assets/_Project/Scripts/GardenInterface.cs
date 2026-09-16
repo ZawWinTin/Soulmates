@@ -632,7 +632,7 @@ public sealed class GardenInterface : MonoBehaviour
         );
         // Distinct rewards: the countdown earns a time star; the map star is independent.
         bool compact = w <= 720;
-        float statusW = compact ? 80 : Mathf.Min(244, w * .29f);
+        float statusW = compact ? Mathf.Clamp(w - 314, 80, 220) : Mathf.Min(244, w * .29f);
         float statusX = compact ? w / 2 - statusW / 2 : w * .39f;
         float statusY = compact ? h - bottom + 18 : (TouchControls ? 4 : 8);
         var status = Box(
@@ -717,7 +717,14 @@ public sealed class GardenInterface : MonoBehaviour
             true,
             TextAlignmentOptions.Center
         );
-        bonusStarIcon = Picture(status, theme.star, bx + (compact ? 29 : 12), by + 23, 22, 22);
+        bonusStarIcon = Picture(
+            status,
+            theme.star,
+            bx + (compact ? (columnW - 22) / 2 : 12),
+            by + 23,
+            22,
+            22
+        );
         goalLabel = Text(
             status,
             "Find star",
@@ -1032,7 +1039,9 @@ public sealed class GardenInterface : MonoBehaviour
         float objectiveY = wide ? 320 : 88 + artH + 8;
         Text(
             card,
-            "Bring both little souls to their matching glowing tiles!",
+            TouchControls
+                ? "Tap each soul’s arrow pad. Bring both to their matching glowing tiles!"
+                : "Bring both little souls to their matching glowing tiles!",
             wide ? 30 : 26,
             objectiveY,
             wide ? artW : cw - 52,

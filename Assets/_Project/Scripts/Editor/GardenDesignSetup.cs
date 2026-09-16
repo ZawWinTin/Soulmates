@@ -50,6 +50,13 @@ public static class GardenDesignSetup
     [MenuItem("Tools/Soulmates/Garden/Install design")]
     public static void Install()
     {
+        // Web Audio keeps game music out of Safari's HTML media playback UI.
+        var musicImporter = (AudioImporter)
+            AssetImporter.GetAtPath("Assets/_Project/Audios/theme1.mp3");
+        var webAudio = musicImporter.defaultSampleSettings;
+        webAudio.loadType = AudioClipLoadType.DecompressOnLoad;
+        musicImporter.defaultSampleSettings = webAudio;
+        musicImporter.SaveAndReimport();
         if (!AssetDatabase.IsValidFolder(Art))
             AssetDatabase.CreateFolder("Assets/_Project", "Garden");
         // Neutral white nine-slice: geometry belongs to the UI system, not a baked colored button.

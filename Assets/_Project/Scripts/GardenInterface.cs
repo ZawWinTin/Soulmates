@@ -47,6 +47,8 @@ public sealed class GardenInterface : MonoBehaviour
         screen,
         modal;
     CanvasGroup fade;
+    Coroutine modalAnimation;
+    bool modalTransitioning;
     GameController game;
     PlayerController boy,
         girl;
@@ -195,7 +197,7 @@ public sealed class GardenInterface : MonoBehaviour
                 if (goalLabel != null)
                     goalLabel.text = game.starCollected ? "Found!" : "Find star";
             }
-            if (game.ResultsReady && !completed)
+            if (game.ResultsReady && !completed && !modalTransitioning)
             {
                 completed = true;
                 OpenOverlay("win");
@@ -228,6 +230,10 @@ public sealed class GardenInterface : MonoBehaviour
 
     void Rebuild()
     {
+        if (modalAnimation != null)
+            StopCoroutine(modalAnimation);
+        modalAnimation = null;
+        modalTransitioning = false;
         width = Screen.width;
         height = Screen.height;
         lastTouch = TouchControls;
@@ -541,37 +547,70 @@ public sealed class GardenInterface : MonoBehaviour
 
     void BuildCredits()
     {
-        Header("MADE WITH CARE", "Made with heart.", "Thank you for bringing these two together.");
-        float cw = Mathf.Min(w - 2 * Margin, 600),
-            x = (w - cw) / 2;
-        bool shortScreen = TouchControls && !Portrait;
-        float cy = shortScreen ? 195 : 240;
-        var card = Box(screen, "Credits", x, cy, cw, Mathf.Min(330, h - cy - 24), Color.white);
-        Picture(card, theme.boy, cw / 2 - 85, 18, 80, 80);
-        Picture(card, theme.girl, cw / 2 + 5, 18, 80, 80);
-        Text(card, "SOULMATES", 25, 112, cw - 50, 28, 15, Muted, true, TextAlignmentOptions.Center);
+        Header(
+            "THE PEOPLE BEHIND THE HOPS",
+            "Made with love.",
+            "A little world for finding each other."
+        );
+        bool wide = TouchControls && !Portrait;
+        float cw = Mathf.Min(w - 2 * Margin, 680);
+        float cy = wide ? 200 : 236;
+        float ch = Mathf.Min(wide ? 254 : 440, h - cy - 28);
+        var card = Box(screen, "Credits keepsake", (w - cw) / 2, cy, cw, ch, Color.white);
+        var panel = card.GetComponent<Image>();
+        panel.sprite = theme.panel;
+        panel.pixelsPerUnitMultiplier = 8;
+        float artSize = wide ? 190 : Mathf.Min(180, ch * .42f);
+        Picture(card, theme.retryLogo, wide ? 26 : (cw - artSize) / 2, 18, artSize, artSize);
+        float tx = wide ? 230 : 24;
+        float tw = wide ? cw - 256 : cw - 48;
+        float ty = wide ? 40 : artSize + 32;
         Text(
             card,
-            "Created by Zaw Win Tin",
-            25,
-            151,
-            cw - 50,
-            40,
-            TouchControls ? 20 : 25,
+            "DESIGN & DEVELOPMENT",
+            tx,
+            ty,
+            tw,
+            24,
+            12,
+            Muted,
+            true,
+            TextAlignmentOptions.Center
+        );
+        Text(
+            card,
+            "Zaw Win Tin",
+            tx,
+            ty + 30,
+            tw,
+            42,
+            wide ? 28 : 30,
             Ink,
             true,
             TextAlignmentOptions.Center
         );
         Text(
             card,
-            "For the joy of finding a way, together.",
-            25,
-            203,
-            cw - 50,
-            52,
-            17,
+            "Two little souls. One shared adventure.",
+            tx,
+            ty + 83,
+            tw,
+            44,
+            16,
             Muted,
             false,
+            TextAlignmentOptions.Center
+        );
+        Text(
+            card,
+            "And you — thank you for playing!",
+            tx,
+            ty + 142,
+            tw,
+            42,
+            16,
+            Ink,
+            true,
             TextAlignmentOptions.Center
         );
     }
@@ -864,7 +903,7 @@ public sealed class GardenInterface : MonoBehaviour
 
     void OpenOverlay(string kind)
     {
-        if (retrying)
+        if (retrying || modalTransitioning)
             return;
         if (overlay == null)
             modalReturnScale = Time.timeScale;
@@ -874,27 +913,72 @@ public sealed class GardenInterface : MonoBehaviour
             Time.timeScale = 0;
             PauseMenu.isGamePaused = true;
         }
-        if (modal != null)
-        {
-            modal.gameObject.SetActive(false);
-            Destroy(modal.gameObject);
-        }
+        var previous = modal;
         BuildOverlay();
+        modalAnimation = StartCoroutine(TransitionModal(previous, modal, false));
     }
 
     void CloseOverlay()
     {
-        if (overlay == "win")
+        if (overlay == "win" || modalTransitioning || overlay == null)
             return;
-        overlay = null;
-        if (modal != null)
+        modalAnimation = StartCoroutine(TransitionModal(modal, null, true));
+    }
+
+    IEnumerator TransitionModal(RectTransform previous, RectTransform next, bool closing)
+    {
+        modalTransitioning = true;
+        CanvasGroup outgoing =
+            previous != null
+                ? previous.GetComponent<CanvasGroup>()
+                    ?? previous.gameObject.AddComponent<CanvasGroup>()
+                : null;
+        CanvasGroup incoming = next != null ? next.gameObject.AddComponent<CanvasGroup>() : null;
+        if (outgoing != null)
+            outgoing.interactable = false;
+        if (incoming != null)
         {
-            modal.gameObject.SetActive(false);
-            Destroy(modal.gameObject);
-            modal = null;
+            incoming.interactable = false;
+            incoming.alpha = 0;
         }
-        Time.timeScale = modalReturnScale;
-        PauseMenu.isGamePaused = false;
+        var card = next != null ? next.Find("Card") as RectTransform : null;
+        Vector2 target = card != null ? card.anchoredPosition : Vector2.zero;
+        float duration = PlayerPrefs.GetInt("GardenReducedMotion", 0) == 1 ? 0 : .22f;
+        float elapsed = 0;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float ease = 1 - Mathf.Pow(1 - t, 3);
+            if (outgoing != null)
+                outgoing.alpha = 1 - ease;
+            if (incoming != null)
+                incoming.alpha = ease;
+            if (card != null)
+                card.anchoredPosition = target + Vector2.down * (12 * (1 - ease));
+            yield return null;
+        }
+        if (previous != null)
+        {
+            previous.gameObject.SetActive(false);
+            Destroy(previous.gameObject);
+        }
+        if (incoming != null)
+        {
+            incoming.alpha = 1;
+            incoming.interactable = true;
+        }
+        if (card != null)
+            card.anchoredPosition = target;
+        if (closing)
+        {
+            overlay = null;
+            modal = null;
+            Time.timeScale = modalReturnScale;
+            PauseMenu.isGamePaused = false;
+        }
+        modalTransitioning = false;
+        modalAnimation = null;
     }
 
     void BuildOverlay()

@@ -68,6 +68,9 @@ public sealed class GardenReviewCapture : MonoBehaviour
         Screen.SetResolution(1200, 800, false);
         yield return new WaitForSecondsRealtime(2);
         yield return Shot("01-desktop-home");
+        GardenInterface.Active.ShowPage("credits");
+        yield return Shot("desktop-credits");
+        GardenInterface.Active.ShowPage("home");
         GardenInterface.Active.ShowPage("journey");
         yield return Shot("02-desktop-journey");
         GardenInterface.Active.ShowPage("home");
@@ -80,6 +83,9 @@ public sealed class GardenReviewCapture : MonoBehaviour
         yield return new WaitForSecondsRealtime(1);
         GardenInterface.Active.SetTouchPreview(true);
         yield return Shot("04-phone-home");
+        GardenInterface.Active.ShowPage("credits");
+        yield return Shot("phone-credits");
+        GardenInterface.Active.ShowPage("home");
         GardenInterface.Active.ShowPage("journey");
         yield return Shot("05-phone-journey");
         GardenInterface.Active.PreviewOverlay("help");

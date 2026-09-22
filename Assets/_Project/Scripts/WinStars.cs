@@ -11,6 +11,7 @@ public class WinStars : MonoBehaviour
 {
     [Range(0, 3)]
     public int earned = 3;
+    public bool[] earnedSlots;
     public float startDelay = 0.3f;
     public float stagger = 0.22f;
     public float popTime = 0.4f;
@@ -41,8 +42,12 @@ public class WinStars : MonoBehaviour
                 SetAlpha(f, 0f);
         }
         yield return new WaitForSecondsRealtime(startDelay);
-        for (int i = 0; i < n && i < earned; i++)
+        for (int i = 0; i < n; i++)
         {
+            bool unlocked =
+                earnedSlots != null && earnedSlots.Length == n ? earnedSlots[i] : i < earned;
+            if (!unlocked)
+                continue;
             StartCoroutine(Pop(Gold(i), Flash(i)));
             yield return new WaitForSecondsRealtime(stagger);
         }

@@ -71,3 +71,12 @@ crashlytics-build.properties
 
 # Per-user editor state (window layouts etc.) — machine-local, not project data
 UserSettings/
+
+# Local garden design verification builds
+/Design/Preview/
+
+/Design/Backups/
+/Design/WebGL/
+/Design/Captures/
+/Design/*-result.txt
+/mono_crash.*

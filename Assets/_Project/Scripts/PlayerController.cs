@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     private Tilemap groundTilemap;
 
     private bool isFalling;
+    public bool InputLocked { get; set; }
     private float timeToMove = 0.35f;
     private Vector3 originalPosition,
         targetPosition;
@@ -50,6 +51,12 @@ public class PlayerController : MonoBehaviour
     private float funTimer;
     private float nextFun = 10f;
     private bool isFlipping;
+    private Coroutine flipRoutine,
+        celebrationRoutine;
+    private Vector3 flipHome;
+    private float landingTime;
+    private static bool ReducedMotion => PlayerPrefs.GetInt("GardenReducedMotion", 0) != 0;
+    public bool IsIdleFlipping => isFlipping;
     private bool isCelebrating; // happy victory hops while sitting on the goal tile
 
     // Current hop/back-flip height above the ground (world units). Read by CharacterShadow so the
@@ -91,11 +98,18 @@ public class PlayerController : MonoBehaviour
             winTile = GameObject.FindGameObjectWithTag("WinTile2").GetComponent<Transform>();
         }
         groundTilemap = GameObject.FindGameObjectWithTag("GroundTileMap").GetComponent<Tilemap>();
+        if (winTile.GetComponent<RuneAwakening>() == null)
+            winTile.gameObject.AddComponent<RuneAwakening>();
     }
 
     private void OnEnable()
     {
         controls.Enable();
+    }
+
+    private void OnDestroy()
+    {
+        controls?.Dispose();
     }
 
     private void OnDisable()
@@ -137,6 +151,7 @@ public class PlayerController : MonoBehaviour
         // so no idle/backflip plays during the stacked state).
         if (
             frontSprite == null
+            || InputLocked
             || isMoving
             || isFlipping
             || isCelebrating
@@ -145,8 +160,12 @@ public class PlayerController : MonoBehaviour
         )
             return;
 
-        // Gentle breathing
-        float breathe = Mathf.Sin(Time.time * 2.6f + idlePhase) * 0.08f;
+        // Landing settles without delaying the next accepted move.
+        landingTime = Mathf.Max(0, landingTime - Time.deltaTime);
+        float settle = landingTime / .18f;
+        float breathe = ReducedMotion ? 0 : Mathf.Sin(Time.time * 2.6f + idlePhase) * .035f;
+        if (!ReducedMotion && landingTime > 0)
+            breathe = -.13f * settle * Mathf.Cos((1 - settle) * Mathf.PI * 2);
         transform.localScale = new Vector3(
             baseScale.x * (1f - breathe),
             baseScale.y * (1f + breathe),
@@ -167,11 +186,11 @@ public class PlayerController : MonoBehaviour
         // Every so often, a fun little backflip — only in solo play. It can't fire while stacked
         // because the early-return above bails when this slime is hidden inside the couple.
         funTimer += Time.deltaTime;
-        if (funTimer >= nextFun)
+        if (!ReducedMotion && funTimer >= nextFun)
         {
             funTimer = 0f;
             nextFun = Random.Range(8f, 16f);
-            StartCoroutine(BackFlip());
+            flipRoutine = StartCoroutine(BackFlip());
         }
     }
 
@@ -191,6 +210,7 @@ public class PlayerController : MonoBehaviour
         float dur = 0.6f,
             e = 0f;
         Vector3 startPos = transform.position;
+        flipHome = startPos;
         while (e < dur)
         {
             float t = e / dur;
@@ -213,10 +233,19 @@ public class PlayerController : MonoBehaviour
         isFlipping = false;
     }
 
+    public void RequestMove(Vector2 direction) => CharacterMove(direction);
+
     private void CharacterMove(Vector2 direction)
     {
         Vector2 movePosition;
-        if (!isMoving && !isFlipping && rigidBody2D.gravityScale == 0 && Time.timeScale == 1)
+        if (
+            !InputLocked
+            && !isMoving
+            && !isPlayerWinning
+            && !isFalling
+            && rigidBody2D.gravityScale == 0
+            && Time.timeScale == 1
+        )
         {
             //Specify Position to Move
             switch (direction)
@@ -247,10 +276,20 @@ public class PlayerController : MonoBehaviour
             // Accepted a real cardinal move — now it counts as activity: restart the
             // idle countdown (backflip only plays after a quiet spell) and record the
             // direction the clones compare for climb-down offsets.
+            if (isFlipping)
+            {
+                if (flipRoutine != null)
+                    StopCoroutine(flipRoutine);
+                transform.position = flipHome;
+                transform.localRotation = Quaternion.identity;
+                transform.localScale = baseScale;
+                currentLift = 0;
+                isFlipping = false;
+            }
+            landingTime = 0;
             funTimer = 0f;
             playerNextDirection = direction;
             StartCoroutine(GridMovement(movePosition)); //Move as GridBased Movement with smoothness
-            Invoke("CheckWinning", timeToMove); //Wait Movement and Check Current Player's Position for Winning or not
         }
     }
 
@@ -304,17 +343,24 @@ public class PlayerController : MonoBehaviour
         while (elapsedTime < timeToMove)
         {
             float t = elapsedTime / timeToMove;
-            Vector3 pos = Vector3.Lerp(originalPosition, targetPosition, t);
-            if (frontSprite != null) // bouncy jump for the new slimes: stretch + vertical arc
+            float flight =
+                frontSprite != null && !ReducedMotion ? Mathf.Clamp01((t - .12f) / .88f) : t;
+            Vector3 pos = Vector3.Lerp(
+                originalPosition,
+                targetPosition,
+                Mathf.SmoothStep(0, 1, flight)
+            );
+            if (frontSprite != null && !ReducedMotion)
             {
-                float arc = Mathf.Sin(t * Mathf.PI); // 0 → 1 → 0
+                float arc = Mathf.Sin(flight * Mathf.PI);
+                float anticipation = t < .12f ? Mathf.Sin(t / .12f * Mathf.PI) : 0;
                 transform.localScale = new Vector3(
-                    baseScale.x * (1f - 0.2f * arc),
-                    baseScale.y * (1f + 0.3f * arc),
+                    baseScale.x * (1f - .16f * arc + .1f * anticipation),
+                    baseScale.y * (1f + .22f * arc - .1f * anticipation),
                     baseScale.z
                 );
-                currentLift = arc * 0.4f; // shadow stays grounded while the slime is up
-                pos += Vector3.up * currentLift; // higher, bouncier jump when switching tiles
+                currentLift = arc * .36f;
+                pos += Vector3.up * currentLift;
             }
             transform.position = pos;
             elapsedTime += Time.deltaTime;
@@ -355,7 +401,9 @@ public class PlayerController : MonoBehaviour
 
         if (animator != null && animator.enabled)
             animator.SetBool("isJumping", false); //Stop Jump Animation (old blob)
+        landingTime = .18f;
         isMoving = false; //Accept other Input
+        CheckWinning(); // Evaluate the settled position, after the final hop frame.
     }
 
     // Stop a win tile's glow particles without assuming a fixed child index (the old code used
@@ -477,68 +525,67 @@ public class PlayerController : MonoBehaviour
             // too bright — switch off the slime's light so only the win-tile glow shows.
             foreach (var l in GetComponentsInChildren<Light2D>(true))
                 l.enabled = false;
+            winTile.GetComponent<RuneAwakening>()?.Awaken();
             OnDisable(); // Disable Control of Player
             if (frontSprite != null)
-                StartCoroutine(CelebrateWin()); // joyful hops while waiting for the partner
+                celebrationRoutine = StartCoroutine(CelebrateWin(false));
         }
     }
 
-    // Happy victory hops once this slime reaches its own goal tile — repeats until the level ends
-    // (the object is destroyed on scene change). Squash-stretch bounce with a little wiggle.
-    private IEnumerator CelebrateWin()
+    public void CelebrateTogether()
+    {
+        if (celebrationRoutine != null)
+            StopCoroutine(celebrationRoutine);
+        transform.position -= Vector3.up * currentLift;
+        currentLift = 0;
+        transform.localScale = baseScale;
+        transform.localRotation = Quaternion.identity;
+        celebrationRoutine = StartCoroutine(CelebrateWin(true));
+        winTile.GetComponent<RuneAwakening>()?.Awaken();
+    }
+
+    private IEnumerator CelebrateWin(bool together)
     {
         isCelebrating = true;
-        if (frontSprite != null)
-            spriteRenderer.sprite = frontSprite; // face the camera, smiling
+        spriteRenderer.sprite = frontSprite;
         Vector3 home = transform.position;
-        int hops = 0;
-        while (isPlayerWinning && spriteRenderer != null && spriteRenderer.enabled)
+        int count = together ? 2 : 1;
+        for (int hop = 0; hop < count && !ReducedMotion; hop++)
         {
-            float dur = 0.42f,
-                e = 0f;
-            while (e < dur)
+            float elapsed = 0;
+            while (elapsed < .46f)
             {
-                float t = e / dur;
-                float arc = Mathf.Sin(t * Mathf.PI); // 0 → 1 → 0
-                currentLift = arc * 0.28f; // shadow stays grounded (CharacterShadow reads this)
+                float t = Mathf.Clamp01(elapsed / .46f);
+                float arc = Mathf.Sin(t * Mathf.PI);
+                currentLift = arc * (together ? .3f : .22f);
                 transform.position = home + Vector3.up * currentLift;
                 transform.localScale = new Vector3(
-                    baseScale.x * (1f - 0.14f * arc),
-                    baseScale.y * (1f + 0.2f * arc),
+                    baseScale.x * (1 - .12f * arc),
+                    baseScale.y * (1 + .18f * arc),
                     baseScale.z
                 );
-                transform.localRotation = Quaternion.Euler(
-                    0f,
-                    0f,
-                    Mathf.Sin(t * Mathf.PI * 2f) * 10f
-                ); // wiggle
-                e += Time.deltaTime;
+                transform.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(t * Mathf.PI * 2) * 5);
+                elapsed += Time.deltaTime;
                 yield return null;
             }
             transform.position = home;
-            transform.localScale = baseScale;
-            transform.localRotation = Quaternion.identity;
-            currentLift = 0f;
-
-            // happy blink between hops (the idle blink is gated off while celebrating, so do it here)
-            hops++;
-            if (blinkSprite != null && hops % 2 == 0)
-            {
-                spriteRenderer.sprite = blinkSprite;
-                yield return new WaitForSeconds(0.12f);
-                if (spriteRenderer != null && spriteRenderer.sprite == blinkSprite)
-                    spriteRenderer.sprite = frontSprite;
-            }
-
-            float wait = 0.18f,
-                w = 0f;
-            while (w < wait && isPlayerWinning)
-            {
-                w += Time.deltaTime;
-                yield return null;
-            }
+            currentLift = 0;
         }
-        currentLift = 0f;
+        transform.localRotation = Quaternion.identity;
+        spriteRenderer.sprite = blinkSprite != null ? blinkSprite : frontSprite;
+        // A contented grounded sway while the partner solves their path.
+        float phase = 0;
+        while (isPlayerWinning)
+        {
+            phase += Time.deltaTime;
+            float breath = ReducedMotion ? 0 : Mathf.Sin(phase * 2.4f) * .035f;
+            transform.localScale = new Vector3(
+                baseScale.x * (1 - breath),
+                baseScale.y * (1 + breath),
+                baseScale.z
+            );
+            yield return null;
+        }
         isCelebrating = false;
     }
 

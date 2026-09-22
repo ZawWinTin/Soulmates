@@ -3249,6 +3249,18 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2798936169215443004, guid: c3ea2905bfff2084d8285123b89d1294, type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 2798936169215443004, guid: c3ea2905bfff2084d8285123b89d1294, type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0.93
+      objectReference: {fileID: 0}
+    - target: {fileID: 2798936169215443004, guid: c3ea2905bfff2084d8285123b89d1294, type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0.91
+      objectReference: {fileID: 0}
     - target: {fileID: 2798936169215443005, guid: c3ea2905bfff2084d8285123b89d1294, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -3292,6 +3304,14 @@ PrefabInstance:
     - target: {fileID: 2798936169215443005, guid: c3ea2905bfff2084d8285123b89d1294, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3411426936171632984, guid: c3ea2905bfff2084d8285123b89d1294, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8858280298186799357, guid: c3ea2905bfff2084d8285123b89d1294, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5410,7 +5430,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1395830698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5504,7 +5524,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1395830697}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f2341fb3c4473d24cb8c2cc17938e03d, type: 3}
   m_Name: 
@@ -6285,7 +6305,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4729173155592795565, guid: e0cbe89f2a573c4499c838e081d61984, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4729173156048800880, guid: e0cbe89f2a573c4499c838e081d61984, type: 3}
       propertyPath: transition
@@ -7534,6 +7554,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1932490541}
   m_CullTransparentMesh: 1
+--- !u!1 &1933103499
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1933103501}
+  - component: {fileID: 1933103500}
+  m_Layer: 0
+  m_Name: Garden Presentation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1933103500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933103499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89707ee408e4a44a78c39c0b03eaf7be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  theme: {fileID: 11400000, guid: eec8c89c65b10407e84566a8e48f430d, type: 2}
+  forceTouch: 0
+--- !u!4 &1933103501
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933103499}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1946059117
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8588,3 +8654,4 @@ SceneRoots:
   - {fileID: 1551646367}
   - {fileID: 1395830701}
   - {fileID: 474950670}
+  - {fileID: 1933103501}

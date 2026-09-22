@@ -42,7 +42,13 @@ public class CloudDrift : MonoBehaviour
                 continue;
             var go = new GameObject("Cloud" + i, typeof(SpriteRenderer));
             go.transform.SetParent(transform, false);
-            float sc = scale * Random.Range(0.75f, 1.3f);
+            float referenceWidth =
+                cloudSprites[0] != null ? cloudSprites[0].bounds.size.x : sprite.bounds.size.x;
+            float sc =
+                scale
+                * referenceWidth
+                / Mathf.Max(.01f, sprite.bounds.size.x)
+                * Random.Range(0.75f, 1.3f);
             go.transform.localScale = Vector3.one * sc;
             go.transform.localPosition = new Vector3(
                 Random.Range(-wrap, wrap),
@@ -56,13 +62,37 @@ public class CloudDrift : MonoBehaviour
             if (material != null)
                 sr.sharedMaterial = material;
             // smaller clouds read as farther away → drift a little slower (parallax depth)
-            clouds.Add(new Cloud { t = go.transform, speed = baseSpeed * sc });
+            clouds.Add(
+                new Cloud { t = go.transform, speed = baseSpeed * Random.Range(.65f, 1.1f) }
+            );
+        }
+    }
+
+    public void FitView(float width, float height)
+    {
+        float oldX = spanX,
+            oldY = spanY,
+            oldScale = scale;
+        spanX = width * 1.3f;
+        spanY = height * .46f;
+        if (cloudSprites != null && cloudSprites.Length > 0 && cloudSprites[0] != null)
+            scale = width * .14f / Mathf.Max(.01f, cloudSprites[0].bounds.size.x);
+        wrap = spanX * .5f + 4;
+        if (clouds == null)
+            return;
+        foreach (var cloud in clouds)
+        {
+            var pos = cloud.t.localPosition;
+            pos.x *= spanX / Mathf.Max(.01f, oldX);
+            pos.y *= spanY / Mathf.Max(.01f, oldY);
+            cloud.t.localPosition = pos;
+            cloud.t.localScale *= scale / Mathf.Max(.01f, oldScale);
         }
     }
 
     void Update()
     {
-        if (clouds == null)
+        if (clouds == null || PlayerPrefs.GetInt("GardenReducedMotion", 0) == 1)
             return;
         foreach (var c in clouds)
         {

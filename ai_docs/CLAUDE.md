@@ -1,3 +1,5 @@
+> **Current design update (September 2026):** `Assets/_Project/Scripts/GardenInterface.cs` owns menu/HUD/modal navigation and creates the UI at runtime from `GardenTheme`. `GardenTouchButton` supports simultaneous touch controls; `GardenArrow` renders font-independent direction icons. `Editor/GardenDesignSetup` installs the design into all eleven scenes through Unity APIs. Legacy canvases are inactive; do not run the old ArtRevampSetup commands over this branch. Read `Design/DESIGN.md` for current details; the older architecture notes below are historical.
+
 # Soulmates — Project Guide
 
 This document is the entry point for any AI assistant (or new contributor) working on **Soulmates**. Read it before making changes; update it when the project's shape changes.

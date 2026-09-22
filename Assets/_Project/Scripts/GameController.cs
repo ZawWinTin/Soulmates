@@ -51,6 +51,10 @@ public class GameController : MonoBehaviour
     public float timeParSeconds = 45f;
 
     [HideInInspector]
+    public int earnedStars { get; private set; }
+
+    public bool timeStarEarned { get; private set; }
+    public bool ResultsReady { get; private set; }
     public bool starCollected; // set true by a StarPickup when a slime grabs the map star
 
     void Awake()
@@ -78,13 +82,28 @@ public class GameController : MonoBehaviour
         {
             isGameOver = true;
             UnStackPlayer1AndPlayer2();
-            FindObjectOfType<LevelLoader>().StartLevel(SceneManager.GetActiveScene().buildIndex);
+            player1.GetComponent<PlayerController>().InputLocked = true;
+            player2.GetComponent<PlayerController>().InputLocked = true;
+            GardenInterface.Active?.BeginRetry();
+            StartCoroutine(RetryAfterFall());
         }
+    }
+
+    IEnumerator RetryAfterFall()
+    {
+        // Let the fall, tumble and sound register before the fade starts.
+        yield return new WaitForSeconds(1.15f);
+        if (GardenInterface.Active != null)
+            GardenInterface.Active.Navigate(SceneManager.GetActiveScene().buildIndex);
+        else
+            FindObjectOfType<LevelLoader>().StartLevel(SceneManager.GetActiveScene().buildIndex);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isGameOver || isLevelCompleted)
+            return;
         //Game Over
         if (player1.gravityScale > 0 || player2.gravityScale > 0)
         {
@@ -122,10 +141,12 @@ public class GameController : MonoBehaviour
             // Star rating: 1 for completing, +1 for time, +1 for grabbing the map star. Set it on the
             // win screen BEFORE activating it (WinStars reveals `earned` stars in OnEnable).
             int earned = 1;
-            if (Time.timeSinceLevelLoad <= timeParSeconds)
+            timeStarEarned = Time.timeSinceLevelLoad <= timeParSeconds;
+            if (timeStarEarned)
                 earned++;
             if (starCollected)
                 earned++;
+            earnedStars = earned;
             var stars = completeLevelUI.GetComponentInChildren<WinStars>(true);
             if (stars != null)
                 stars.earned = earned;
@@ -133,7 +154,9 @@ public class GameController : MonoBehaviour
             // Persist the best rating so it shows on the level-select map.
             SaveSystem.SaveStars(SceneManager.GetActiveScene().buildIndex, earned);
 
-            completeLevelUI.SetActive(true);
+            player1.GetComponent<PlayerController>().CelebrateTogether();
+            player2.GetComponent<PlayerController>().CelebrateTogether();
+            StartCoroutine(RevealResults());
             AudioManager.instance?.Play("LevelComplete"); // both soulmates home → celebration
 
             SavedData data = SaveSystem.LoadData();
@@ -145,6 +168,15 @@ public class GameController : MonoBehaviour
                 SaveSystem.SaveData(nextLevel);
             }
         }
+    }
+
+    IEnumerator RevealResults()
+    {
+        yield return new WaitForSeconds(
+            PlayerPrefs.GetInt("GardenReducedMotion", 0) == 0 ? 1.15f : .4f
+        );
+        ResultsReady = true;
+        completeLevelUI.SetActive(true);
     }
 
     private void StackPlayer1AndPlayer2()

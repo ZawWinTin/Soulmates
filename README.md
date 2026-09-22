@@ -1,3 +1,5 @@
+> **Responsive UI redesign (September 2026):** The current interface reuses Soulmates’ original cute art and illustrated how-to, with responsive layouts installed in all eleven build scenes. Open `Assets/_Project/Scenes/Menu.unity` and press Play. See [Design/DESIGN.md](Design/DESIGN.md) for the implementation, mobile controls, verification and previews. The older project notes below describe the pre-redesign layout.
+
 # Soulmates
 
 A two-player cooperative puzzle-platformer. Two kawaii slime characters must navigate isometric tile grids together — moving destroys tiles beneath you, stacking on the same tile triggers a heart animation, and each level requires both players to reach their respective goal tiles before falling off.

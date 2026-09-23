@@ -433,7 +433,7 @@ public sealed class GardenInterface : MonoBehaviour
     void BuildJourney()
     {
         lastUnlocked = Unlocked();
-        Button(screen, "Back", 20, 22, 90, 42, () => ShowPage("home"), Sage, Ink);
+        Button(screen, "Back", 20, 22, 100, 40, () => ShowPage("home"), Sage, Ink, ButtonIcon.Back);
         Text(
             screen,
             "Pick a little adventure!",

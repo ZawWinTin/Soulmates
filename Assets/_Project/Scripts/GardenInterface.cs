@@ -1119,7 +1119,18 @@ public sealed class GardenInterface : MonoBehaviour
         bool wide = ch < 500;
         float artW = wide ? cw * .45f : Mathf.Min(cw - 50, 380);
         float artH = wide ? 230 : (Portrait ? 195 : 220);
-        Picture(card, theme.tutorial, wide ? 24 : (cw - artW) / 2, 88, artW, artH);
+        var illustration = Picture(
+            card,
+            theme.tutorial,
+            wide ? 24 : (cw - artW) / 2,
+            88,
+            artW,
+            artH
+        );
+        // Image.preserveAspect aligns the fitted sprite using the RectTransform pivot.
+        // Center the artwork inside its box while retaining the box's original position.
+        illustration.rectTransform.pivot = new Vector2(.5f, .5f);
+        illustration.rectTransform.anchoredPosition += new Vector2(artW / 2, -artH / 2);
         float objectiveY = wide ? 320 : 88 + artH + 8;
         Text(
             card,

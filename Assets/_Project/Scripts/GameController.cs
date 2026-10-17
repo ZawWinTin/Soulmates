@@ -7,6 +7,10 @@ public class GameController : MonoBehaviour
 {
     private Rigidbody2D player1,
         player2;
+
+    // Cached in Awake: Update reads isPlayerWinning on both every frame.
+    private PlayerController player1Controller,
+        player2Controller;
     public GameObject completeLevelUI;
 
     private GameObject setOfPlayer1Player2;
@@ -61,6 +65,8 @@ public class GameController : MonoBehaviour
         //Get Players Rigidbody2D using Players' Tags
         player1 = GameObject.FindGameObjectWithTag("Player1").GetComponent<Rigidbody2D>();
         player2 = GameObject.FindGameObjectWithTag("Player2").GetComponent<Rigidbody2D>();
+        player1Controller = player1.GetComponent<PlayerController>();
+        player2Controller = player2.GetComponent<PlayerController>();
 
         //For Players Stack Condition
         groundTilemap = GameObject.FindGameObjectWithTag("GroundTileMap").GetComponent<Tilemap>();
@@ -81,8 +87,8 @@ public class GameController : MonoBehaviour
         {
             isGameOver = true;
             UnStackPlayer1AndPlayer2();
-            player1.GetComponent<PlayerController>().InputLocked = true;
-            player2.GetComponent<PlayerController>().InputLocked = true;
+            player1Controller.InputLocked = true;
+            player2Controller.InputLocked = true;
             GardenInterface.Active?.BeginRetry();
             StartCoroutine(RetryAfterFall());
         }
@@ -114,10 +120,7 @@ public class GameController : MonoBehaviour
         }
 
         //Winning State
-        if (
-            player1.GetComponent<PlayerController>().isPlayerWinning
-            && player2.GetComponent<PlayerController>().isPlayerWinning
-        )
+        if (player1Controller.isPlayerWinning && player2Controller.isPlayerWinning)
         {
             CompleteLevel();
         }
@@ -153,8 +156,8 @@ public class GameController : MonoBehaviour
             // Persist the best rating so it shows on the level-select map.
             SaveSystem.SaveStars(SceneManager.GetActiveScene().buildIndex, earned);
 
-            player1.GetComponent<PlayerController>().CelebrateTogether();
-            player2.GetComponent<PlayerController>().CelebrateTogether();
+            player1Controller.CelebrateTogether();
+            player2Controller.CelebrateTogether();
             StartCoroutine(RevealResults());
             AudioManager.instance?.Play("LevelComplete"); // both soulmates home → celebration
 
@@ -199,8 +202,8 @@ public class GameController : MonoBehaviour
                 player2Clone.SetActive(false);
 
                 // back view only when BOTH slimes are facing away, else the cute front hug
-                var p1c = player1.GetComponent<PlayerController>();
-                var p2c = player2.GetComponent<PlayerController>();
+                var p1c = player1Controller;
+                var p2c = player2Controller;
                 bool bothFacingBack =
                     player1.GetComponent<SpriteRenderer>().sprite == p1c.backSprite
                     && player2.GetComponent<SpriteRenderer>().sprite == p2c.backSprite;
@@ -249,8 +252,8 @@ public class GameController : MonoBehaviour
 
     private void CheckPlayersAreInSameTile()
     {
-        var p1c = player1.GetComponent<PlayerController>();
-        var p2c = player2.GetComponent<PlayerController>();
+        var p1c = player1Controller;
+        var p2c = player2Controller;
         bool p1Moving = p1c.isMoving;
         bool p2Moving = p2c.isMoving;
         coupleHopMover = null; // cleared unless a couple-hop is decided below (applied in LateUpdate)

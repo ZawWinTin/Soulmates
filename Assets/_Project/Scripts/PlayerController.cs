@@ -317,7 +317,7 @@ public class PlayerController : MonoBehaviour
 
         //Check Climb Down or Not in Stack Condition
         if (
-            gameObject.tag == "Player1Clone"
+            gameObject.CompareTag("Player1Clone")
             && playerNextDirection
                 != GameObject
                     .FindGameObjectWithTag("Player2Clone")
@@ -328,7 +328,7 @@ public class PlayerController : MonoBehaviour
             targetPosition += player1CloneDeclinePosition;
         }
         if (
-            gameObject.tag == "Player2Clone"
+            gameObject.CompareTag("Player2Clone")
             && playerNextDirection
                 != GameObject
                     .FindGameObjectWithTag("Player1Clone")
@@ -612,6 +612,6 @@ public class PlayerController : MonoBehaviour
 
     private bool isPlayerReal()
     {
-        return (gameObject.tag == "Player1" || gameObject.tag == "Player2");
+        return gameObject.CompareTag("Player1") || gameObject.CompareTag("Player2");
     }
 }

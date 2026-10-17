@@ -884,7 +884,7 @@ public static class ArtRevampSetup
             for (int i = 0; i < 2 && i < set.childCount; i++)
             {
                 var child = set.GetChild(i);
-                if (child.name != "Hug" && child.name != "Heart")
+                if (child.name is not ("Hug" or "Heart"))
                     child.gameObject.SetActive(false);
             }
 

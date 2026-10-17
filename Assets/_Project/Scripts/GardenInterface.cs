@@ -1022,96 +1022,100 @@ public sealed class GardenInterface : MonoBehaviour
             true,
             TextAlignmentOptions.Center
         );
-        if (overlay == "exit")
+        switch (overlay)
         {
-            Text(
-                card,
-                "There is always another path to explore.",
-                pad,
-                135,
-                cw - 2 * pad,
-                65,
-                18,
-                Muted
-            );
-            Button(
-                card,
-                "Stay a little longer",
-                pad,
-                235,
-                cw - 2 * pad,
-                52,
-                CloseOverlay,
-                Green,
-                Paper
-            );
-            Button(card, "Exit game", pad, 302, cw - 2 * pad, 46, Helper.QuitGame, Sage, Ink);
+            case "exit":
+                Text(
+                    card,
+                    "There is always another path to explore.",
+                    pad,
+                    135,
+                    cw - 2 * pad,
+                    65,
+                    18,
+                    Muted
+                );
+                Button(
+                    card,
+                    "Stay a little longer",
+                    pad,
+                    235,
+                    cw - 2 * pad,
+                    52,
+                    CloseOverlay,
+                    Green,
+                    Paper
+                );
+                Button(card, "Exit game", pad, 302, cw - 2 * pad, 46, Helper.QuitGame, Sage, Ink);
+                break;
+            case "pause":
+                Text(
+                    card,
+                    "Your little souls will wait for you.",
+                    pad,
+                    130,
+                    cw - 2 * pad,
+                    35,
+                    18,
+                    Muted
+                );
+                Button(
+                    card,
+                    "Keep going",
+                    pad,
+                    190,
+                    cw - 2 * pad,
+                    56,
+                    CloseOverlay,
+                    Green,
+                    Paper,
+                    ButtonIcon.Next
+                );
+                Button(
+                    card,
+                    "Try this level again",
+                    pad,
+                    260,
+                    cw - 2 * pad,
+                    46,
+                    () => Navigate(sceneIndex),
+                    Sage,
+                    Ink
+                );
+                Button(
+                    card,
+                    "Settings",
+                    pad,
+                    320,
+                    (cw - 2 * pad - 12) / 2,
+                    44,
+                    () => OpenOverlay("settings"),
+                    Paper,
+                    Ink
+                );
+                Button(
+                    card,
+                    "Level selection",
+                    cw / 2 + 6,
+                    320,
+                    (cw - 2 * pad - 12) / 2,
+                    44,
+                    () => Navigate(0, true),
+                    Paper,
+                    Ink
+                );
+                Button(card, "Quit game", pad, 378, cw - 2 * pad, 44, Helper.QuitGame, Rose, Ink);
+                break;
+            case "help":
+                BuildHelp(card, cw, ch);
+                break;
+            case "settings":
+                BuildSettings(card, cw, ch);
+                break;
+            default:
+                BuildWin(card, cw, ch);
+                break;
         }
-        else if (overlay == "pause")
-        {
-            Text(
-                card,
-                "Your little souls will wait for you.",
-                pad,
-                130,
-                cw - 2 * pad,
-                35,
-                18,
-                Muted
-            );
-            Button(
-                card,
-                "Keep going",
-                pad,
-                190,
-                cw - 2 * pad,
-                56,
-                CloseOverlay,
-                Green,
-                Paper,
-                ButtonIcon.Next
-            );
-            Button(
-                card,
-                "Try this level again",
-                pad,
-                260,
-                cw - 2 * pad,
-                46,
-                () => Navigate(sceneIndex),
-                Sage,
-                Ink
-            );
-            Button(
-                card,
-                "Settings",
-                pad,
-                320,
-                (cw - 2 * pad - 12) / 2,
-                44,
-                () => OpenOverlay("settings"),
-                Paper,
-                Ink
-            );
-            Button(
-                card,
-                "Level selection",
-                cw / 2 + 6,
-                320,
-                (cw - 2 * pad - 12) / 2,
-                44,
-                () => Navigate(0, true),
-                Paper,
-                Ink
-            );
-            Button(card, "Quit game", pad, 378, cw - 2 * pad, 44, Helper.QuitGame, Rose, Ink);
-        }
-        else if (overlay == "help")
-            BuildHelp(card, cw, ch);
-        else if (overlay == "settings")
-            BuildSettings(card, cw, ch);
-        else
-            BuildWin(card, cw, ch);
     }
 
     void BuildHelp(RectTransform card, float cw, float ch)

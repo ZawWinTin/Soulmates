@@ -1186,7 +1186,7 @@ public sealed class GardenInterface : MonoBehaviour
         {
             int col =
                 TouchControls ? i % 2
-                : i == 0 || i == 3 ? 1
+                : i is 0 or 3 ? 1
                 : i == 1 ? 2
                 : 0;
             int row =
@@ -1690,7 +1690,7 @@ public sealed class GardenInterface : MonoBehaviour
         b.colors = colors;
         bool backArrow = symbol == ButtonIcon.Back;
         bool forwardArrow = symbol == ButtonIcon.Next;
-        string caption = symbol == ButtonIcon.Help || symbol == ButtonIcon.Pause ? "" : label;
+        string caption = symbol is ButtonIcon.Help or ButtonIcon.Pause ? "" : label;
         var captionText = Text(
             rt,
             caption,
@@ -1727,7 +1727,7 @@ public sealed class GardenInterface : MonoBehaviour
             icon.rectTransform.anchoredPosition += new Vector2(iconSize / 2, -iconSize / 2);
             icon.rectTransform.localRotation = Quaternion.Euler(0, 0, backArrow ? 90 : -90);
         }
-        if (symbol == ButtonIcon.Help || symbol == ButtonIcon.Pause)
+        if (symbol is ButtonIcon.Help or ButtonIcon.Pause)
         {
             var glyph = Picture(
                 rt,

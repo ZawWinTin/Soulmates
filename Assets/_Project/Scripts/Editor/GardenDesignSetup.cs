@@ -181,7 +181,7 @@ public static class GardenDesignSetup
             if (camera != null)
             {
                 foreach (Transform child in camera.transform)
-                    if (child.name == "SkyBackground" || child.name == "Clouds")
+                    if (child.name is "SkyBackground" or "Clouds")
                         child.gameObject.SetActive(true);
                 camera.backgroundColor = new Color(.91f, .93f, .88f);
             }

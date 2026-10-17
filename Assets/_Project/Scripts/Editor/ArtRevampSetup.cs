@@ -99,7 +99,7 @@ public static class ArtRevampSetup
         foreach (var b in root.GetComponentsInChildren<Button>(true))
         {
             // leave the round HUD icons (the ? help and || pause buttons) alone
-            if (b.name == "PauseButton" || b.name == "HelpButton")
+            if (b.name is "PauseButton" or "HelpButton")
                 continue;
             SkinButton(b.gameObject, btn, false);
             skinned++;
@@ -351,7 +351,7 @@ public static class ArtRevampSetup
         // dark plum → unreadable). Re-whiten them last, skipping the round HUD icons.
         foreach (var b in root.GetComponentsInChildren<Button>(true))
         {
-            if (b.name == "PauseButton" || b.name == "HelpButton")
+            if (b.name is "PauseButton" or "HelpButton")
                 continue;
             foreach (var t in b.GetComponentsInChildren<Text>(true))
                 t.color = Color.white;

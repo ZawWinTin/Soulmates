@@ -4,7 +4,18 @@ using UnityEngine;
 
 public static class SaveSystem
 {
-    static string Path => Application.persistentDataPath + "/level.pz";
+    // Saves are JSON (JsonUtility). Builds before 2026-10 wrote level.pz with BinaryFormatter, which .NET
+    // deprecates as unsafe: LoadData reads that file once, rewrites it as level.json and renames it to
+    // level.pz.migrated (kept as a backup). Drop LoadLegacy once old saves no longer matter.
+    // Read lazily: Unity refuses persistentDataPath during object construction. Tests point it at a temp folder.
+    static string folder;
+    public static string Folder
+    {
+        get => folder ?? Application.persistentDataPath;
+        set => folder = value;
+    }
+    static string Path => Folder + "/level.json";
+    static string LegacyPath => Folder + "/level.pz";
 
     // Save unlock progress WITHOUT clobbering star ratings (load-merge-write).
     public static void SaveData(int level)
@@ -39,13 +50,11 @@ public static class SaveSystem
     {
         string path = Path;
         if (!File.Exists(path))
-            return null;
+            return File.Exists(LegacyPath) ? MigrateLegacy() : null;
 
         try
         {
-            BinaryFormatter formatter = new BinaryFormatter();
-            using (FileStream stream = new FileStream(path, FileMode.Open))
-                return formatter.Deserialize(stream) as SavedData;
+            return JsonUtility.FromJson<SavedData>(File.ReadAllText(path));
         }
         catch (System.Exception e)
         {
@@ -62,9 +71,71 @@ public static class SaveSystem
         }
     }
 
+    // One-time upgrade of a BinaryFormatter save. If anything fails, the old file stays where it is and the
+    // next LoadData tries again; a save that can't be read at all is treated as empty, as before.
+    static SavedData MigrateLegacy()
+    {
+        SavedData data;
+        try
+        {
+            data = LoadLegacy();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning(
+                "[SaveSystem.MigrateLegacy] could not read old save, treating as empty. "
+                    + e.Message
+            );
+            return null;
+        }
+        if (data == null)
+            return null;
+
+        if (TryWrite(data))
+        {
+            try
+            {
+                string backup = LegacyPath + ".migrated";
+                if (File.Exists(backup))
+                    File.Delete(backup);
+                File.Move(LegacyPath, backup);
+            }
+            catch (System.Exception e)
+            {
+                // level.json exists now and wins on the next load, so a leftover level.pz is harmless.
+                Debug.LogWarning(
+                    "[SaveSystem.MigrateLegacy] saved as JSON, but could not rename the old file. "
+                        + e.Message
+                );
+            }
+            Debug.Log("[SaveSystem.MigrateLegacy] old save converted to " + Path);
+        }
+        return data;
+    }
+
+#pragma warning disable SYSLIB0011 // BinaryFormatter: only to read saves written before 2026-10.
+    static SavedData LoadLegacy()
+    {
+        var formatter = new BinaryFormatter();
+        using (FileStream stream = new FileStream(LegacyPath, FileMode.Open))
+            return formatter.Deserialize(stream) as SavedData;
+    }
+#pragma warning restore SYSLIB0011
+
     static void Write(SavedData data)
     {
-        BinaryFormatter formatter = new BinaryFormatter();
+        if (!TryWrite(data))
+            // The write didn't happen — do NOT notify the cloud, or last-write-wins
+            // on z-core could overwrite good progress with a save we never made.
+            return;
+
+        // Every successful local save also goes to the z-games site as a cloud
+        // save (WebGL only — it's a harmless Debug.Log everywhere else).
+        GameBridge.NotifyProgressSaved();
+    }
+
+    static bool TryWrite(SavedData data)
+    {
         string path = Path;
         string tmp = path + ".tmp";
         Debug.Log("[SaveSystem.Write] Saved at: " + path);
@@ -75,8 +146,7 @@ public static class SaveSystem
         // way a failed write leaves the previous save untouched.
         try
         {
-            using (FileStream stream = new FileStream(tmp, FileMode.Create))
-                formatter.Serialize(stream, data);
+            File.WriteAllText(tmp, JsonUtility.ToJson(data));
 
             if (File.Exists(path))
                 File.Delete(path);
@@ -93,14 +163,9 @@ public static class SaveSystem
                     File.Delete(tmp);
             }
             catch { }
-            // The write didn't happen — do NOT notify the cloud, or last-write-wins
-            // on z-core could overwrite good progress with a save we never made.
-            return;
+            return false;
         }
-
-        // Every successful local save also goes to the z-games site as a cloud
-        // save (WebGL only — it's a harmless Debug.Log everywhere else).
-        GameBridge.NotifyProgressSaved();
+        return true;
     }
 
     // Old save files predate the stars[] field → it deserializes as null. Rebuild it so indexing is safe.

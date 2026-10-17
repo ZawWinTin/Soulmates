@@ -6,8 +6,6 @@ using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 /// <summary>Installs the garden presentation through Unity's asset/scene APIs. Existing UI is retained inactive.</summary>
 public static class GardenDesignSetup

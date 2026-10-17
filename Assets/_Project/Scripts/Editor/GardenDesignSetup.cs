@@ -7,6 +7,11 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
+// TextureImporter.spritesheet is obsolete (CS0618) but still works on Unity 2022.3. This installer has
+// already run; moving it to ISpriteEditorDataProvider can't be tested without re-running it over every
+// scene and could change the sprite IDs the scenes reference. Migrate it before upgrading Unity.
+#pragma warning disable CS0618
+
 /// <summary>Installs the garden presentation through Unity's asset/scene APIs. Existing UI is retained inactive.</summary>
 public static class GardenDesignSetup
 {
@@ -341,3 +346,5 @@ public static class GardenDesignSetup
     }
 }
 #endif
+
+#pragma warning restore CS0618

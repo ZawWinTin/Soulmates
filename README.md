@@ -1,8 +1,14 @@
-> **Responsive UI redesign (September 2026):** The current interface reuses Soulmates’ original cute art and illustrated how-to, with responsive layouts installed in all eleven build scenes. Open `Assets/_Project/Scenes/Menu.unity` and press Play. See [Design/DESIGN.md](Design/DESIGN.md) for the implementation, mobile controls, verification and previews. The older project notes below describe the pre-redesign layout.
-
 # Soulmates
 
-A two-player cooperative puzzle-platformer. Two kawaii slime characters must navigate isometric tile grids together — moving destroys tiles beneath you, stacking on the same tile triggers a heart animation, and each level requires both players to reach their respective goal tiles before falling off.
+![Soulmates](docs/images/cover.png)
+
+A two-player cooperative puzzle game. Two kawaii slimes, Blue and Pink, hop across floating isometric islands to find each other: every tile you leave crumbles behind you, sharing a tile makes them hug, and a level is won when both reach their own goal tile. Nine levels, a time star and a bonus star in each. It runs in the browser on **z-games**, with progress saved to the cloud.
+
+| Level select | Playing | On a phone |
+|:---:|:---:|:---:|
+| <img src="docs/images/levels.png" width="360" alt="Level select: nine islands along a trail"> | <img src="docs/images/gameplay.png" width="360" alt="Level 1, First steps: Blue on WASD, Pink on the arrow keys"> | <img src="docs/images/phone.png" width="140" alt="The same level on a phone, with touch arrows"> |
+
+> **Current UI (September 2026):** responsive layouts installed in all eleven build scenes, with touch controls on phones. Open `Assets/_Project/Scenes/Menu.unity` and press Play. See [Design/DESIGN.md](Design/DESIGN.md) for the implementation, mobile controls and verification. Some older notes below describe the pre-redesign layout.
 
 > **Deeper docs:** see [`ai_docs/CLAUDE.md`](ai_docs/CLAUDE.md) for code architecture, gameplay systems, and "how to add X" recipes.
 
@@ -55,6 +61,9 @@ CSharpier is now available as `dotnet csharpier`.
 | `dotnet csharpier format .` | Format every C# file in the project (vendor code + auto-generated input scripts skipped via `.csharpierignore`) |
 | `dotnet csharpier check .` | Check formatting without writing — exits non-zero if anything is unformatted (CI-friendly) |
 | `dotnet tool restore` | Install/restore tools pinned in `.config/dotnet-tools.json` after pulling |
+| `tools/compile-check.sh` | Compile headless with Unity 2022.3.62f3 and list every C# error/warning (close the editor first) |
+| `tools/run-tests.sh` | Run the EditMode tests headless (save round trip, old-save migration) |
+| `git config core.hooksPath .githooks` | Once per clone: pre-commit runs the whitespace + CSharpier checks |
 
 ### VSCode setup (recommended)
 
@@ -118,8 +127,3 @@ Most "code" changes happen in the **Unity Editor**, not in `.cs` files. The foll
 
 Solo project. Currently 9 levels plus Menu, Demo, and Credit scenes. Recent work: tile drop animation, sprite sorting order on dropped tiles, breathing-light effect.
 
----
-
-## Sister project
-
-This is a sibling to [The-Lost-Scrolls](../The-Lost-Scrolls/) (2D action-platformer) by the same developer. They share the Unity 2022.3 LTS / URP 14 stack and conventions.

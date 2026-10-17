@@ -35,7 +35,6 @@ public class PlayOptions : MonoBehaviour
         {
             playableLevel = data.level;
         }
-        Debug.Log(playableLevel);
 
         //Make Buttons to Enable and Disable
         playMenu.SetActive(true); // GameObject cannot access Tag which is not active !

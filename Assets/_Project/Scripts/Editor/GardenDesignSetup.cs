@@ -158,8 +158,6 @@ public static class GardenDesignSetup
                 old.enabled = false;
             foreach (var old in UnityEngine.Object.FindObjectsOfType<PauseMenu>(true))
                 old.enabled = false;
-            foreach (var old in UnityEngine.Object.FindObjectsOfType<CameraController>(true))
-                old.enabled = false;
             foreach (var player in UnityEngine.Object.FindObjectsOfType<PlayerController>(true))
             {
                 if (

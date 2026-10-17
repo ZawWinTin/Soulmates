@@ -55,7 +55,9 @@ public static class SaveSystem
             // local save" — callers fall back to defaults, and for a signed-in
             // player the conservative cloud merge restores real progress on top.
             // The bad file is left in place; the next successful Write replaces it.
-            Debug.LogWarning("SaveSystem: could not read save, treating as empty. " + e.Message);
+            Debug.LogWarning(
+                "[SaveSystem.LoadData] could not read save, treating as empty. " + e.Message
+            );
             return null;
         }
     }
@@ -65,7 +67,7 @@ public static class SaveSystem
         BinaryFormatter formatter = new BinaryFormatter();
         string path = Path;
         string tmp = path + ".tmp";
-        Debug.Log("Saved at: " + path);
+        Debug.Log("[SaveSystem.Write] Saved at: " + path);
 
         // Serialize to a temp file first, then swap it in. FileMode.Create on the
         // real path would truncate the existing save BEFORE writing — if
@@ -82,8 +84,15 @@ public static class SaveSystem
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning("SaveSystem: write failed, keeping previous save. " + e.Message);
-            try { if (File.Exists(tmp)) File.Delete(tmp); } catch { }
+            Debug.LogWarning(
+                "[SaveSystem.Write] write failed, keeping previous save. " + e.Message
+            );
+            try
+            {
+                if (File.Exists(tmp))
+                    File.Delete(tmp);
+            }
+            catch { }
             // The write didn't happen — do NOT notify the cloud, or last-write-wins
             // on z-core could overwrite good progress with a save we never made.
             return;

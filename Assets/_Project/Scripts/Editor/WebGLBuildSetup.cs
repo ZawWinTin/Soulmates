@@ -44,7 +44,9 @@ public static class WebGLBuildSetup
         if (icon != null)
             PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, new[] { icon });
         else
-            Debug.LogWarning($"[WebGLBuildSetup] Icon not found at {IconPath} — skipped.");
+            Debug.LogWarning(
+                $"[WebGLBuildSetup.Configure] Icon not found at {IconPath} — skipped."
+            );
 
         // --- Build Settings ▸ Code Optimization → Disk Size With LTO ---
         // (Reflection: UnityEditor.WebGL.UserBuildSettings only exists when
@@ -54,12 +56,16 @@ public static class WebGLBuildSetup
         // --- Sanity: Menu scene must be first ---
         var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).ToArray();
         if (scenes.Length == 0 || !scenes[0].path.Contains("Menu"))
-            Debug.LogWarning("[WebGLBuildSetup] First enabled scene is not Menu — check Scenes In Build order!");
+            Debug.LogWarning(
+                "[WebGLBuildSetup.Configure] First enabled scene is not Menu — check Scenes In Build order!"
+            );
 
         AssetDatabase.SaveAssets();
-        Debug.Log("[WebGLBuildSetup] Configure done: 960x600, run-in-background, "
-                  + "compression Disabled, data caching on, icon set, DiskSizeLTO. "
-                  + $"Scenes in build: {scenes.Length}.");
+        Debug.Log(
+            "[WebGLBuildSetup.Configure] Configure done: 960x600, run-in-background, "
+                + "compression Disabled, data caching on, icon set, DiskSizeLTO. "
+                + $"Scenes in build: {scenes.Length}."
+        );
     }
 
     [MenuItem("Tools/Soulmates/WebGL: 2. Build For z-games")]
@@ -67,48 +73,67 @@ public static class WebGLBuildSetup
     {
         if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.WebGL)
         {
-            Debug.Log("[WebGLBuildSetup] Switching active build target to WebGL first (this reimports — be patient)…");
-            if (!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL))
+            Debug.Log(
+                "[WebGLBuildSetup.Build] Switching active build target to WebGL first (this reimports — be patient)…"
+            );
+            if (
+                !EditorUserBuildSettings.SwitchActiveBuildTarget(
+                    BuildTargetGroup.WebGL,
+                    BuildTarget.WebGL
+                )
+            )
             {
-                Debug.LogError("[WebGLBuildSetup] Could not switch to WebGL. Is WebGL Build Support installed?");
+                Debug.LogError(
+                    "[WebGLBuildSetup.Build] Could not switch to WebGL. Is WebGL Build Support installed?"
+                );
                 return;
             }
         }
 
         Directory.CreateDirectory(OutputDir);
 
-        var scenes = EditorBuildSettings.scenes
-            .Where(s => s.enabled)
-            .Select(s => s.path)
-            .ToArray();
+        var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
 
-        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
-        {
-            scenes = scenes,
-            locationPathName = OutputDir,
-            target = BuildTarget.WebGL,
-            options = BuildOptions.None,
-        });
+        var report = BuildPipeline.BuildPlayer(
+            new BuildPlayerOptions
+            {
+                scenes = scenes,
+                locationPathName = OutputDir,
+                target = BuildTarget.WebGL,
+                options = BuildOptions.None,
+            }
+        );
 
         var summary = report.summary;
         if (summary.result == BuildResult.Succeeded)
-            Debug.Log($"[WebGLBuildSetup] BUILD OK → {OutputDir} "
-                      + $"({summary.totalSize / (1024 * 1024)} MB, {summary.totalTime.TotalMinutes:F1} min). "
-                      + "Tell Mei — she'll verify and wire the catalog.");
+            Debug.Log(
+                $"[WebGLBuildSetup.Build] BUILD OK → {OutputDir} "
+                    + $"({summary.totalSize / (1024 * 1024)} MB, {summary.totalTime.TotalMinutes:F1} min). "
+                    + "Tell Mei — she'll verify and wire the catalog."
+            );
         else
-            Debug.LogError($"[WebGLBuildSetup] Build {summary.result}: {summary.totalErrors} errors.");
+            Debug.LogError(
+                $"[WebGLBuildSetup.Build] Build {summary.result}: {summary.totalErrors} errors."
+            );
     }
 
     private static void TrySetCodeOptimization(string value)
     {
         try
         {
-            var t = Type.GetType("UnityEditor.WebGL.UserBuildSettings, UnityEditor.WebGL.Extensions");
-            var prop = t?.GetProperty("codeOptimization", BindingFlags.Public | BindingFlags.Static);
+            var t = Type.GetType(
+                "UnityEditor.WebGL.UserBuildSettings, UnityEditor.WebGL.Extensions"
+            );
+            var prop = t?.GetProperty(
+                "codeOptimization",
+                BindingFlags.Public | BindingFlags.Static
+            );
             if (prop == null)
             {
-                Debug.LogWarning("[WebGLBuildSetup] Could not set Code Optimization via API — "
-                                 + "set it manually in Build Settings: Disk Size With LTO.");
+                Debug.LogWarning(
+                    "[WebGLBuildSetup.TrySetCodeOptimization] Could not set Code Optimization via API — "
+                        + "set it manually in Build Settings: Disk Size With LTO."
+                );
                 return;
             }
             var enumVal = Enum.Parse(prop.PropertyType, value);
@@ -116,8 +141,10 @@ public static class WebGLBuildSetup
         }
         catch (Exception e)
         {
-            Debug.LogWarning($"[WebGLBuildSetup] Code Optimization not set ({e.Message}) — "
-                             + "set it manually in Build Settings: Disk Size With LTO.");
+            Debug.LogWarning(
+                $"[WebGLBuildSetup.TrySetCodeOptimization] Code Optimization not set ({e.Message}) — "
+                    + "set it manually in Build Settings: Disk Size With LTO."
+            );
         }
     }
 }

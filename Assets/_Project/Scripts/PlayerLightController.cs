@@ -26,7 +26,9 @@ public class PlayerLightController : MonoBehaviour
 
         if (light2D == null)
         {
-            Debug.LogError("No Light2D component found on this GameObject!");
+            Debug.LogError(
+                "[PlayerLightController.Start] No Light2D component found on this GameObject!"
+            );
             enabled = false;
             return;
         }

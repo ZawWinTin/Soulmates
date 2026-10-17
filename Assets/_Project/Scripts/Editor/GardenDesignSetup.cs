@@ -222,7 +222,7 @@ public static class GardenDesignSetup
             "Design/install-result.txt",
             "Garden design installed in all 11 build scenes.\n"
         );
-        Debug.Log("Garden design installed.");
+        Debug.Log("[GardenDesignSetup.Install] Garden design installed.");
     }
 
     static Sprite ImportPolishedSprite(string name, bool button)

@@ -14,7 +14,7 @@ public class Helper
 
     public static void QuitGame()
     {
-        Debug.Log("Game Quit!");
+        Debug.Log("[Helper.QuitGame] Game Quit!");
 #if UNITY_WEBGL && !UNITY_EDITOR
         ZGamesNotifyExit();
 #elif UNITY_EDITOR

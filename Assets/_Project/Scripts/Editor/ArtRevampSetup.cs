@@ -60,7 +60,9 @@ public static class ArtRevampSetup
         ApplyWinScreen(); // level-complete
         Apply(); // menu + level select + options + transition (opens Menu scene)
         RebakeGroundTilesInAllScenes(); // bake the tiles into every scene
-        Debug.Log("[ArtRevamp] ▶ Apply EVERYTHING complete — review the game.");
+        Debug.Log(
+            "[ArtRevampSetup.ApplyEverything] ▶ Apply EVERYTHING complete — review the game."
+        );
     }
 
     // Just the UI screens (faster than Apply EVERYTHING when you're only iterating on UI).
@@ -71,7 +73,7 @@ public static class ArtRevampSetup
         ApplyGameUI(); // pause + help (shared cards + candy buttons)
         ApplyWinScreen(); // level-complete screen
         Debug.Log(
-            "[ArtRevamp] Soft Candy UI applied: menu, level select, play, options, pause, help, win. Review each."
+            "[ArtRevampSetup.ApplyUITheme] Soft Candy UI applied: menu, level select, play, options, pause, help, win. Review each."
         );
     }
 
@@ -82,7 +84,7 @@ public static class ArtRevampSetup
         WireMenu();
         ReskinLevelButtonPrefab();
         ImproveTransition();
-        Debug.Log("[ArtRevamp] Done. Open Menu.unity and press Play to review.");
+        Debug.Log("[ArtRevampSetup.Apply] Done. Open Menu.unity and press Play to review.");
     }
 
     // In-game UI (Pause / Help / etc.) — edits the shared Game Canvas prefab, so it
@@ -362,7 +364,7 @@ public static class ArtRevampSetup
         PrefabUtility.SaveAsPrefabAsset(root, path);
         PrefabUtility.UnloadPrefabContents(root);
         Debug.Log(
-            $"[ArtRevamp] Game UI reskinned — {skinned} buttons. Test Pause/Help in Play mode."
+            $"[ArtRevampSetup.ApplyGameUI] Game UI reskinned — {skinned} buttons. Test Pause/Help in Play mode."
         );
     }
 
@@ -506,7 +508,7 @@ public static class ArtRevampSetup
         Selection.activeGameObject = root;
         SceneView.FrameLastActiveSceneView(); // snap the Scene view to it so it's obvious
         Debug.Log(
-            $"[ArtRevamp] Built 'CollectStar' (glow + sparkles + shadow) at {root.transform.position} in '{scene.name}'. SELECTED — drag it onto the tile you want, then run Snap (or save)."
+            $"[ArtRevampSetup.AddCollectibleStar] Built 'CollectStar' (glow + sparkles + shadow) at {root.transform.position} in '{scene.name}'. SELECTED — drag it onto the tile you want, then run Snap (or save)."
         );
     }
 
@@ -550,19 +552,23 @@ public static class ArtRevampSetup
         var go = GameObject.Find("CollectStar");
         if (go == null)
         {
-            Debug.LogWarning("[ArtRevamp] No 'CollectStar' in the open scene.");
+            Debug.LogWarning(
+                "[ArtRevampSetup.SnapCollectibleStar] No 'CollectStar' in the open scene."
+            );
             return;
         }
         Undo.RecordObject(go.transform, "Snap CollectStar");
         if (!SnapStarToTile(go.transform, go.transform.position))
         {
-            Debug.LogWarning("[ArtRevamp] No GroundTileMap in the open scene.");
+            Debug.LogWarning(
+                "[ArtRevampSetup.SnapCollectibleStar] No GroundTileMap in the open scene."
+            );
             return;
         }
         EditorSceneManager.MarkSceneDirty(go.scene);
         Selection.activeGameObject = go;
         Debug.Log(
-            $"[ArtRevamp] Snapped 'CollectStar' onto the tile top → {go.transform.position} (lifted {TileTopLift} like the slimes)."
+            $"[ArtRevampSetup.SnapCollectibleStar] Snapped 'CollectStar' onto the tile top → {go.transform.position} (lifted {TileTopLift} like the slimes)."
         );
     }
 
@@ -612,7 +618,7 @@ public static class ArtRevampSetup
         if (clip == null)
         {
             Debug.LogWarning(
-                "[ArtRevamp] star.wav not found — put it in for_claude/ or Assets/_Project/Audios/."
+                "[ArtRevampSetup.WireStarCollectSound] star.wav not found — put it in for_claude/ or Assets/_Project/Audios/."
             );
             return;
         }
@@ -622,7 +628,9 @@ public static class ArtRevampSetup
         var am = root.GetComponent<AudioManager>();
         if (am == null)
         {
-            Debug.LogWarning("[ArtRevamp] AudioManager component missing on the prefab.");
+            Debug.LogWarning(
+                "[ArtRevampSetup.WireStarCollectSound] AudioManager component missing on the prefab."
+            );
             PrefabUtility.UnloadPrefabContents(root);
             return;
         }
@@ -645,7 +653,7 @@ public static class ArtRevampSetup
         PrefabUtility.SaveAsPrefabAsset(root, path);
         PrefabUtility.UnloadPrefabContents(root);
         Debug.Log(
-            "[ArtRevamp] Wired 'StarCollect' SFX on the Audio Manager. StarPickup plays it on collect."
+            "[ArtRevampSetup.WireStarCollectSound] Wired 'StarCollect' SFX on the Audio Manager. StarPickup plays it on collect."
         );
     }
 
@@ -678,7 +686,7 @@ public static class ArtRevampSetup
             var gc = Object.FindObjectOfType<GameController>();
             if (gc == null)
             {
-                Debug.LogWarning($"[ArtRevamp] No GameController in {sc}.");
+                Debug.LogWarning($"[ArtRevampSetup.SetTimeStarPars] No GameController in {sc}.");
                 continue;
             }
             Undo.RecordObject(gc, "Set time-star par");
@@ -690,7 +698,7 @@ public static class ArtRevampSetup
         }
         if (!string.IsNullOrEmpty(current))
             EditorSceneManager.OpenScene(current);
-        Debug.Log($"[ArtRevamp] Time-star pars set on {done}/9 levels.");
+        Debug.Log($"[ArtRevampSetup.SetTimeStarPars] Time-star pars set on {done}/9 levels.");
     }
 
     // Fix already-baked collectible stars in place (no repositioning): (1) the sparkle particle system
@@ -742,7 +750,9 @@ public static class ArtRevampSetup
         }
         if (!string.IsNullOrEmpty(current))
             EditorSceneManager.OpenScene(current);
-        Debug.Log($"[ArtRevamp] Fixed CollectStar particles + sorting on {done}/9 levels.");
+        Debug.Log(
+            $"[ArtRevampSetup.FixCollectStarParticles] Fixed CollectStar particles + sorting on {done}/9 levels."
+        );
     }
 
     // Unlit material carrying the sparkle twinkle texture, for the collectible star's particle system.
@@ -816,14 +826,16 @@ public static class ArtRevampSetup
         PrefabUtility.SaveAsPrefabAsset(gc, gcPath);
         PrefabUtility.UnloadPrefabContents(gc);
 
-        Debug.Log("[ArtRevamp] Characters applied. Play a level to test movement, facing, hop.");
+        Debug.Log(
+            "[ArtRevampSetup.ApplyCharacters] Characters applied. Play a level to test movement, facing, hop."
+        );
     }
 
     static void ConfigureCharSprite(string path)
     {
         if (!(AssetImporter.GetAtPath(path) is TextureImporter ti))
         {
-            Debug.LogWarning("[ArtRevamp] char sprite not found: " + path);
+            Debug.LogWarning("[ArtRevampSetup.ConfigureCharSprite] char sprite not found: " + path);
             return;
         }
         ti.textureType = TextureImporterType.Sprite;
@@ -861,7 +873,7 @@ public static class ArtRevampSetup
         if (front == null)
         {
             Debug.LogWarning(
-                "[ArtRevamp] char_hug.png not found in Characters/ — hug not applied."
+                "[ArtRevampSetup.ApplyHugStack] char_hug.png not found in Characters/ — hug not applied."
             );
             return;
         }
@@ -938,7 +950,9 @@ public static class ArtRevampSetup
         }
         else
         {
-            Debug.LogWarning("[ArtRevamp] Player1+Player2 set not found in Grid prefab.");
+            Debug.LogWarning(
+                "[ArtRevampSetup.ApplyHugStack] Player1+Player2 set not found in Grid prefab."
+            );
         }
         PrefabUtility.SaveAsPrefabAsset(grid, gridPath);
         PrefabUtility.UnloadPrefabContents(grid);
@@ -957,13 +971,15 @@ public static class ArtRevampSetup
         else
         {
             Debug.LogWarning(
-                "[ArtRevamp] GameController not found on Game Controller prefab root."
+                "[ArtRevampSetup.ApplyHugStack] GameController not found on Game Controller prefab root."
             );
         }
         PrefabUtility.SaveAsPrefabAsset(gc, gcPath);
         PrefabUtility.UnloadPrefabContents(gc);
 
-        Debug.Log("[ArtRevamp] Hug stack applied. Move both slimes onto one tile to test.");
+        Debug.Log(
+            "[ArtRevampSetup.ApplyHugStack] Hug stack applied. Move both slimes onto one tile to test."
+        );
     }
 
     static void ConfigureHugSprite(string path)
@@ -991,7 +1007,7 @@ public static class ArtRevampSetup
     {
         if (player == null)
         {
-            Debug.LogWarning("[ArtRevamp] player not found in Grid prefab.");
+            Debug.LogWarning("[ArtRevampSetup.SetupPlayer] player not found in Grid prefab.");
             return;
         }
         if (player.TryGetComponent(out SpriteRenderer sr))
@@ -1049,7 +1065,9 @@ public static class ArtRevampSetup
         var shadowSprite = AssetDatabase.LoadAssetAtPath<Sprite>(ShadowSpritePath);
         if (shadowSprite == null)
         {
-            Debug.LogWarning("[ArtRevamp] shadow sprite missing: " + ShadowSpritePath);
+            Debug.LogWarning(
+                "[ArtRevampSetup.AttachShadow] shadow sprite missing: " + ShadowSpritePath
+            );
             return;
         }
         var parent = follow.parent != null ? follow.parent : follow;
@@ -1526,7 +1544,7 @@ public static class ArtRevampSetup
         foreach (var a in AssetDatabase.LoadAllAssetRepresentationsAtPath(GroundSheet))
             if (a is Sprite gs && gs.name == GroundTileName)
                 return gs;
-        Debug.LogWarning("[ArtRevamp] no ground tile found.");
+        Debug.LogWarning("[ArtRevampSetup.LoadGrassTile] no ground tile found.");
         return null;
     }
 
@@ -1558,7 +1576,7 @@ public static class ArtRevampSetup
         if (variants.Count == 0)
         {
             Debug.LogWarning(
-                "[ArtRevamp] No tile_grass*.png in Sprites/ — drop at least tile_grass.png in first."
+                "[ArtRevampSetup.ApplyGroundTile] No tile_grass*.png in Sprites/ — drop at least tile_grass.png in first."
             );
             return;
         }
@@ -1580,7 +1598,7 @@ public static class ArtRevampSetup
         }
         AssetDatabase.SaveAssets();
         Debug.Log(
-            $"[ArtRevamp] {variants.Count} ground variant(s) spread across {n} grass tiles (all levels). Reopen a level."
+            $"[ArtRevampSetup.ApplyGroundTile] {variants.Count} ground variant(s) spread across {n} grass tiles (all levels). Reopen a level."
         );
     }
 
@@ -1640,7 +1658,7 @@ public static class ArtRevampSetup
         if (!string.IsNullOrEmpty(current))
             EditorSceneManager.OpenScene(current);
         Debug.Log(
-            $"[ArtRevamp] Rebaked {maps} tilemap(s) across {scenes} scene(s). Tiles now persist."
+            $"[ArtRevampSetup.RebakeGroundTilesInAllScenes] Rebaked {maps} tilemap(s) across {scenes} scene(s). Tiles now persist."
         );
     }
 
@@ -1696,8 +1714,8 @@ public static class ArtRevampSetup
             EditorSceneManager.OpenScene(current);
         Debug.Log(
             FlipGroundTiles
-                ? $"[ArtRevamp] Flipped {flips} ground tiles across {scenes} scene(s)."
-                : $"[ArtRevamp] Ground-tile flipping OFF — reset all tiles flat across {scenes} scene(s)."
+                ? $"[ArtRevampSetup.FlipRandomGroundTiles] Flipped {flips} ground tiles across {scenes} scene(s)."
+                : $"[ArtRevampSetup.FlipRandomGroundTiles] Ground-tile flipping OFF — reset all tiles flat across {scenes} scene(s)."
         );
     }
 
@@ -1712,7 +1730,9 @@ public static class ArtRevampSetup
         var lc = FindIn(root.transform, "LevelComplete");
         if (lc == null)
         {
-            Debug.LogWarning("[ArtRevamp] 'LevelComplete' not found in Game Canvas prefab.");
+            Debug.LogWarning(
+                "[ArtRevampSetup.ApplyWinScreen] 'LevelComplete' not found in Game Canvas prefab."
+            );
             PrefabUtility.UnloadPrefabContents(root);
             return;
         }
@@ -1922,7 +1942,7 @@ public static class ArtRevampSetup
         PrefabUtility.SaveAsPrefabAsset(root, path);
         PrefabUtility.UnloadPrefabContents(root);
         Debug.Log(
-            "[ArtRevamp] Win screen rebuilt (card + slimes + button row). Finish a level to review."
+            "[ArtRevampSetup.ApplyWinScreen] Win screen rebuilt (card + slimes + button row). Finish a level to review."
         );
     }
 
@@ -2212,7 +2232,9 @@ public static class ArtRevampSetup
 
         PrefabUtility.SaveAsPrefabAsset(root, path);
         PrefabUtility.UnloadPrefabContents(root);
-        Debug.Log("[ArtRevamp] Level00Button prefab reskinned (updates all instances).");
+        Debug.Log(
+            "[ArtRevampSetup.ReskinLevelButtonPrefab] Level00Button prefab reskinned (updates all instances)."
+        );
     }
 
     // Recolor the scene-transition fade from harsh black to a soft pink (edits the prefab).
@@ -2225,11 +2247,13 @@ public static class ArtRevampSetup
         {
             bi.color = new Color(1f, 0.82f, 0.88f, 1f); // soft pink (alpha driven by CanvasGroup)
             PrefabUtility.SaveAsPrefabAsset(root, path);
-            Debug.Log("[ArtRevamp] transition fade recolored to soft pink.");
+            Debug.Log("[ArtRevampSetup.ImproveTransition] transition fade recolored to soft pink.");
         }
         else
         {
-            Debug.LogWarning("[ArtRevamp] BlackScreen Image not found in Level Loader prefab.");
+            Debug.LogWarning(
+                "[ArtRevampSetup.ImproveTransition] BlackScreen Image not found in Level Loader prefab."
+            );
         }
         PrefabUtility.UnloadPrefabContents(root);
     }
@@ -2247,7 +2271,7 @@ public static class ArtRevampSetup
         if (sky == null)
         {
             Debug.LogWarning(
-                "[ArtRevamp] no bg_gradient.png / bg_game.png in Sprites/UI/ — gameplay background not applied."
+                "[ArtRevampSetup.ApplyGameplayBackground] no bg_gradient.png / bg_game.png in Sprites/UI/ — gameplay background not applied."
             );
             return;
         }
@@ -2325,7 +2349,7 @@ public static class ArtRevampSetup
         PrefabUtility.SaveAsPrefabAsset(cam, camPath);
         PrefabUtility.UnloadPrefabContents(cam);
         Debug.Log(
-            "[ArtRevamp] Gameplay background + drifting clouds applied to Main Camera — Play a level to see the drift."
+            "[ArtRevampSetup.ApplyGameplayBackground] Gameplay background + drifting clouds applied to Main Camera — Play a level to see the drift."
         );
     }
 
@@ -2347,7 +2371,9 @@ public static class ArtRevampSetup
         {
             Object.DestroyImmediate(stray.gameObject);
             PrefabUtility.SaveAsPrefabAsset(grid, gridPath);
-            Debug.Log("[ArtRevamp] Removed the duplicate global light from the Grid prefab.");
+            Debug.Log(
+                "[ArtRevampSetup.ApplyLevelLighting] Removed the duplicate global light from the Grid prefab."
+            );
         }
         PrefabUtility.UnloadPrefabContents(grid);
 
@@ -2367,7 +2393,7 @@ public static class ArtRevampSetup
         PrefabUtility.SaveAsPrefabAsset(gc, gcPath);
         PrefabUtility.UnloadPrefabContents(gc);
         Debug.Log(
-            $"[ArtRevamp] Global light brightened to {intensity} (×{n}). The duplicate is gone — reopen a level."
+            $"[ArtRevampSetup.ApplyLevelLighting] Global light brightened to {intensity} (×{n}). The duplicate is gone — reopen a level."
         );
     }
 
@@ -2415,7 +2441,9 @@ public static class ArtRevampSetup
         var set = FindIn(grid.transform, "Player1+Player2");
         if (set == null || set.childCount < 3)
         {
-            Debug.LogWarning("[ArtRevamp] Player1+Player2 stack (with Heart) not found.");
+            Debug.LogWarning(
+                "[ArtRevampSetup.ApplyLoveSmoke] Player1+Player2 stack (with Heart) not found."
+            );
             PrefabUtility.UnloadPrefabContents(grid);
             return;
         }
@@ -2575,7 +2603,7 @@ public static class ArtRevampSetup
         PrefabUtility.SaveAsPrefabAsset(grid, gridPath);
         PrefabUtility.UnloadPrefabContents(grid);
         Debug.Log(
-            "[ArtRevamp] Love smoke + floating 3D hearts applied. Stack the two slimes to see it."
+            "[ArtRevampSetup.ApplyLoveSmoke] Love smoke + floating 3D hearts applied. Stack the two slimes to see it."
         );
     }
 
@@ -2633,7 +2661,9 @@ public static class ArtRevampSetup
             var rune = AssetDatabase.LoadAssetAtPath<Sprite>(runePath);
             if (rune == null)
             {
-                Debug.LogWarning($"[ArtRevamp] {runePath} not found — {tileName} left unchanged.");
+                Debug.LogWarning(
+                    $"[ArtRevampSetup.ApplyWinTileRune] {runePath} not found — {tileName} left unchanged."
+                );
                 continue;
             }
             var t = FindIn(grid.transform, tileName);
@@ -2668,7 +2698,7 @@ public static class ArtRevampSetup
         PrefabUtility.SaveAsPrefabAsset(grid, gridPath);
         PrefabUtility.UnloadPrefabContents(grid);
         Debug.Log(
-            $"[ArtRevamp] Win tiles updated — {applied}/2 runes applied (recolored to match soulmates). Play to review."
+            $"[ArtRevampSetup.ApplyWinTileRune] Win tiles updated — {applied}/2 runes applied (recolored to match soulmates). Play to review."
         );
     }
 
@@ -2678,7 +2708,9 @@ public static class ArtRevampSetup
     {
         if (!(AssetImporter.GetAtPath(path) is TextureImporter ti))
         {
-            Debug.LogWarning("[ArtRevamp] world sprite not found: " + path);
+            Debug.LogWarning(
+                "[ArtRevampSetup.ConfigureWorldSprite] world sprite not found: " + path
+            );
             return;
         }
         ti.textureType = TextureImporterType.Sprite;
@@ -2741,7 +2773,7 @@ public static class ArtRevampSetup
         var path = UIDir + file;
         if (!(AssetImporter.GetAtPath(path) is TextureImporter ti))
         {
-            Debug.LogWarning("[ArtRevamp] sprite not found: " + path);
+            Debug.LogWarning("[ArtRevampSetup.SetSprite] sprite not found: " + path);
             return;
         }
         ti.textureType = TextureImporterType.Sprite;
@@ -2771,7 +2803,7 @@ public static class ArtRevampSetup
         var anchorGo = Find(scene, "Background") ?? Find(scene, "Thanks");
         if (anchorGo == null || anchorGo.transform.parent == null)
         {
-            Debug.LogWarning("[ArtRevamp] Credit content canvas not found.");
+            Debug.LogWarning("[ArtRevampSetup.ApplyCreditScreen] Credit content canvas not found.");
             return;
         }
         var root = anchorGo.transform.parent;
@@ -2974,7 +3006,9 @@ public static class ArtRevampSetup
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log("[ArtRevamp] Credit screen revamped (Soft Candy). Open Credit.unity to review.");
+        Debug.Log(
+            "[ArtRevampSetup.ApplyCreditScreen] Credit screen revamped (Soft Candy). Open Credit.unity to review."
+        );
     }
 
     static void CenterCreditText(GameObject go, Vector2 pos, Vector2 size)
@@ -3041,7 +3075,7 @@ public static class ArtRevampSetup
         }
         else
         {
-            Debug.LogWarning("[ArtRevamp] 'Background' Image not found.");
+            Debug.LogWarning("[ArtRevampSetup.WireMenu] 'Background' Image not found.");
         }
 
         // Canvas reference size (shared by buttons + logo)
@@ -3061,7 +3095,7 @@ public static class ArtRevampSetup
             var go = Find(scene, mainButtons[i]);
             if (!go)
             {
-                Debug.LogWarning("[ArtRevamp] button not found: " + mainButtons[i]);
+                Debug.LogWarning("[ArtRevampSetup.WireMenu] button not found: " + mainButtons[i]);
                 continue;
             }
             var rt = go.GetComponent<RectTransform>();
@@ -3188,7 +3222,7 @@ public static class ArtRevampSetup
         }
         else
         {
-            Debug.LogWarning("[ArtRevamp] 'World1LevelButtons' not found.");
+            Debug.LogWarning("[ArtRevampSetup.WirePlayMenu] 'World1LevelButtons' not found.");
         }
 
         var backT = FindIn(play.transform, "BackButoon");
@@ -3275,7 +3309,7 @@ public static class ArtRevampSetup
         var options = Find(scene, "OptionsMenu");
         if (!options)
         {
-            Debug.LogWarning("[ArtRevamp] 'OptionsMenu' not found.");
+            Debug.LogWarning("[ArtRevampSetup.WireOptions] 'OptionsMenu' not found.");
             return;
         }
 

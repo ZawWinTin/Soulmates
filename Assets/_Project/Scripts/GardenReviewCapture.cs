@@ -55,7 +55,9 @@ public sealed class GardenReviewCapture : MonoBehaviour
                 yield return Shot("retry-" + size.x + "x" + size.y);
                 yield return new WaitForSecondsRealtime(.6f);
                 if (previous != null || SceneManager.GetActiveScene().buildIndex != 1)
-                    Debug.LogError("Retry review: same-level restart failed");
+                    Debug.LogError(
+                        "[GardenReviewCapture.Start] Retry review: same-level restart failed"
+                    );
             }
             File.WriteAllText(
                 Path.Combine(output, "retry-complete.txt"),
@@ -99,7 +101,9 @@ public sealed class GardenReviewCapture : MonoBehaviour
         var start = pc.transform.position;
         pc.RequestMove(Vector2.one.normalized);
         if (pc.isMoving || pc.transform.position != start)
-            Debug.LogError("Garden review: diagonal input incorrectly moved player");
+            Debug.LogError(
+                "[GardenReviewCapture.Start] Garden review: diagonal input incorrectly moved player"
+            );
         Screen.SetResolution(390, 844, false);
         yield return Shot("08-phone-portrait-game");
         GardenInterface.Active.PreviewOverlay("pause");
@@ -119,7 +123,10 @@ public sealed class GardenReviewCapture : MonoBehaviour
         {
             float revealedScale = starReveal.transform.GetChild(slot).GetChild(0).localScale.x;
             if (slot == 1 ? revealedScale > .01f : revealedScale < .99f)
-                Debug.LogError("Garden review: incorrect achievement star slot " + slot);
+                Debug.LogError(
+                    "[GardenReviewCapture.Start] Garden review: incorrect achievement star slot "
+                        + slot
+                );
         }
         yield return SceneManager.LoadSceneAsync(10);
         yield return Shot("12-desktop-credits");
@@ -175,7 +182,10 @@ public sealed class GardenReviewCapture : MonoBehaviour
                     );
                     if (!player.isMoving)
                         Debug.LogError(
-                            "Garden review: touch did not move " + tag + " level " + level
+                            "[GardenReviewCapture.Start] Garden review: touch did not move "
+                                + tag
+                                + " level "
+                                + level
                         );
                     pressed.Add(pad);
                     break;
@@ -197,7 +207,7 @@ public sealed class GardenReviewCapture : MonoBehaviour
                 var before = pad.player.transform.position;
                 pad.OnPointerDown(new PointerEventData(EventSystem.current) { pointerId = 5 });
                 if (pad.player.transform.position != before)
-                    Debug.LogError("Garden review: moved while paused");
+                    Debug.LogError("[GardenReviewCapture.Start] Garden review: moved while paused");
             }
         }
         yield return SceneManager.LoadSceneAsync(1);
@@ -235,14 +245,19 @@ public sealed class GardenReviewCapture : MonoBehaviour
                 yield return null;
                 yield return null;
                 if (!controlled.isMoving)
-                    Debug.LogError("Garden review: keyboard binding failed: " + keys[i]);
+                    Debug.LogError(
+                        "[GardenReviewCapture.Start] Garden review: keyboard binding failed: "
+                            + keys[i]
+                    );
                 InputSystem.QueueStateEvent(keyboard, new KeyboardState());
                 yield return null;
                 exercised = true;
                 break;
             }
             if (!exercised)
-                Debug.LogError("Garden review: no keyboard movement was exercised");
+                Debug.LogError(
+                    "[GardenReviewCapture.Start] Garden review: no keyboard movement was exercised"
+                );
         }
         yield return SceneManager.LoadSceneAsync(1);
         yield return new WaitForSecondsRealtime(.3f);
@@ -251,11 +266,15 @@ public sealed class GardenReviewCapture : MonoBehaviour
         falling.transform.position += Vector3.left * 20;
         yield return new WaitForSecondsRealtime(.25f);
         if (falling == null || !partner.InputLocked)
-            Debug.LogError("Garden review: fall reloaded instantly or failed to lock input");
+            Debug.LogError(
+                "[GardenReviewCapture.Start] Garden review: fall reloaded instantly or failed to lock input"
+            );
         yield return Shot("fall-before-retry");
         yield return new WaitForSecondsRealtime(1.5f);
         if (falling != null || SceneManager.GetActiveScene().buildIndex != 1)
-            Debug.LogError("Garden review: delayed retry did not reload the same level");
+            Debug.LogError(
+                "[GardenReviewCapture.Start] Garden review: delayed retry did not reload the same level"
+            );
         // Interrupt an actual idle flip and ensure the next hop starts from its grounded cell.
         yield return SceneManager.LoadSceneAsync(1);
         yield return new WaitForSecondsRealtime(.3f);
@@ -271,17 +290,21 @@ public sealed class GardenReviewCapture : MonoBehaviour
             .SetValue(actor, 0f);
         yield return new WaitForSecondsRealtime(.15f);
         if (!actor.IsIdleFlipping)
-            Debug.LogError("Animation review: idle flip did not begin");
+            Debug.LogError("[GardenReviewCapture.Start] Animation review: idle flip did not begin");
         actor.RequestMove(Vector2.up);
         if (
             !actor.isMoving
             || actor.IsIdleFlipping
             || Vector3.Distance(actor.transform.position, home) > .02f
         )
-            Debug.LogError("Animation review: input failed to interrupt and ground idle flip");
+            Debug.LogError(
+                "[GardenReviewCapture.Start] Animation review: input failed to interrupt and ground idle flip"
+            );
         yield return new WaitForSecondsRealtime(.4f);
         if (Vector3.Distance(actor.transform.position, home + new Vector3(-.5f, .25f, 0)) > .02f)
-            Debug.LogError("Animation review: interrupted flip changed hop destination");
+            Debug.LogError(
+                "[GardenReviewCapture.Start] Animation review: interrupted flip changed hop destination"
+            );
 
         foreach (bool reduced in new[] { false, true })
         {
@@ -298,20 +321,26 @@ public sealed class GardenReviewCapture : MonoBehaviour
             blue.SendMessage("CheckWinning");
             yield return Shot(reduced ? "rune-reduced" : "rune-arrival");
             if (!blue.isPlayerWinning || blue.currentLift != 0 || game.isLevelCompleted)
-                Debug.LogError("Animation review: first arrival failed to settle and wait");
+                Debug.LogError(
+                    "[GardenReviewCapture.Start] Animation review: first arrival failed to settle and wait"
+                );
             pink.transform.position = GameObject
                 .FindGameObjectWithTag("WinTile2")
                 .transform.position;
             pink.SendMessage("CheckWinning");
             yield return new WaitForSecondsRealtime(.2f);
             if (!game.isLevelCompleted || game.ResultsReady)
-                Debug.LogError("Animation review: shared celebration did not precede results");
+                Debug.LogError(
+                    "[GardenReviewCapture.Start] Animation review: shared celebration did not precede results"
+                );
             ScreenCapture.CaptureScreenshot(
                 Path.Combine(output, reduced ? "together-reduced.png" : "together-celebration.png")
             );
             yield return new WaitForSecondsRealtime(1.2f);
             if (!game.ResultsReady)
-                Debug.LogError("Animation review: results were never revealed");
+                Debug.LogError(
+                    "[GardenReviewCapture.Start] Animation review: results were never revealed"
+                );
             yield return Shot(reduced ? "result-reduced" : "result-celebrated");
         }
         PlayerPrefs.SetInt("GardenReducedMotion", motionPreference);
@@ -334,15 +363,21 @@ public sealed class GardenReviewCapture : MonoBehaviour
                     arrow.rectTransform.TransformPoint(arrow.rectTransform.rect.center)
                 );
             if (Vector2.Distance(center, parent.rect.center) > .1f)
-                Debug.LogError("Garden review: arrow not centered in key in " + name);
+                Debug.LogError(
+                    "[GardenReviewCapture.Shot] Garden review: arrow not centered in key in " + name
+                );
             var renderer = arrow.GetComponent<CanvasRenderer>();
             var mesh = renderer != null ? renderer.GetMesh() : null;
             if (mesh == null || mesh.vertexCount == 0)
-                Debug.LogError("Garden review: missing arrow geometry in " + name);
+                Debug.LogError(
+                    "[GardenReviewCapture.Shot] Garden review: missing arrow geometry in " + name
+                );
         }
         foreach (var text in FindObjectsOfType<TMP_Text>())
             if (text.isTextOverflowing)
-                Debug.LogWarning("Garden layout overflow: " + name + " / " + text.text);
+                Debug.LogWarning(
+                    "[GardenReviewCapture.Shot] Garden layout overflow: " + name + " / " + text.text
+                );
         ScreenCapture.CaptureScreenshot(Path.Combine(output, name + ".png"));
         yield return new WaitForSecondsRealtime(.5f);
     }

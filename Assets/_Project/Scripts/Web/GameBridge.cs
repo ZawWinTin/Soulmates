@@ -106,7 +106,7 @@ public class GameBridge : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
         ZGamesNotifyReady();
 #else
-        Debug.Log("GameBridge: Ready (editor/desktop — event not sent)");
+        Debug.Log("[GameBridge.Start] Ready (editor/desktop — event not sent)");
 #endif
     }
 
@@ -159,12 +159,14 @@ public class GameBridge : MonoBehaviour
                 // Non-empty but unreadable: we don't know the real cloud state, so
                 // stay read-only to the cloud this session (cloudLoaded stays false)
                 // rather than risk overwriting a good copy we merely failed to parse.
-                Debug.LogWarning("GameBridge: could not parse cloud save, ignoring. " + e.Message);
+                Debug.LogWarning(
+                    "[GameBridge.LoadData] could not parse cloud save, ignoring. " + e.Message
+                );
                 return;
             }
             if (cloud == null)
             {
-                Debug.LogWarning("GameBridge: cloud save parsed to null, ignoring.");
+                Debug.LogWarning("[GameBridge.LoadData] cloud save parsed to null, ignoring.");
                 return;
             }
         }
@@ -175,7 +177,7 @@ public class GameBridge : MonoBehaviour
         int[] cloudStars = (cloud != null && cloud.stars != null) ? cloud.stars : new int[0];
 
         bool menuNeedsRefresh = false; // cloud raised local → re-render level select
-        bool cloudBehind = false;      // local holds progress the cloud lacks → upload
+        bool cloudBehind = false; // local holds progress the cloud lacks → upload
 
         suppressNotify = true; // batch: one SaveData event after the merge, not one per write
         try
@@ -264,7 +266,9 @@ public class GameBridge : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning("GameBridge: could not parse context, ignoring. " + e.Message);
+            Debug.LogWarning(
+                "[GameBridge.SetContext] could not parse context, ignoring. " + e.Message
+            );
         }
     }
 
@@ -283,7 +287,9 @@ public class GameBridge : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning("GameBridge: could not parse device, ignoring. " + e.Message);
+            Debug.LogWarning(
+                "[GameBridge.SetDevice] could not parse device, ignoring. " + e.Message
+            );
             return;
         }
         if (device == null)
@@ -305,7 +311,7 @@ public class GameBridge : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning("GameBridge: a DeviceChanged listener threw. " + e.Message);
+            Debug.LogWarning("[GameBridge.SetDevice] a DeviceChanged listener threw. " + e.Message);
         }
     }
 
@@ -332,7 +338,9 @@ public class GameBridge : MonoBehaviour
             // Local is missing or unreadable (corrupt file). Pushing a zeroed blob
             // now would, under the cloud's last-write-wins, clobber good progress
             // on z-core. Skip — a real save syncs once local is readable again.
-            Debug.LogWarning("GameBridge: skipping cloud sync — no readable local save.");
+            Debug.LogWarning(
+                "[GameBridge.NotifyProgressSaved] skipping cloud sync — no readable local save."
+            );
             return;
         }
 
@@ -345,7 +353,9 @@ public class GameBridge : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
         ZGamesNotifySave(json);
 #else
-        Debug.Log("GameBridge: SaveData (editor/desktop — event not sent): " + json);
+        Debug.Log(
+            "[GameBridge.NotifyProgressSaved] SaveData (editor/desktop — event not sent): " + json
+        );
 #endif
     }
 }

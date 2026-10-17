@@ -48,8 +48,11 @@ public class PlayOptions : MonoBehaviour
             LevelStars levelStars = levelButtons[i].GetComponentInChildren<LevelStars>(true);
             int levelIndex = levelStars != null ? levelStars.buildIndex : i + 1;
             if (levelStars == null)
-                Debug.LogWarning("PlayOptions: LevelButton '" + levelButtons[i].name
-                    + "' has no LevelStars; falling back to array order.");
+                Debug.LogWarning(
+                    "[PlayOptions.LoadLevel] LevelButton '"
+                        + levelButtons[i].name
+                        + "' has no LevelStars; falling back to array order."
+                );
 
             levelButtons[i].GetComponent<Button>().interactable = levelIndex <= playableLevel;
 

@@ -1,0 +1,6 @@
+# Mechanical, style-only commits: `git blame` skips them and shows the real author of each line.
+# Enable once per clone: git config blame.ignoreRevsFile .git-blame-ignore-revs
+# (GitHub and recent Rider/VS Code versions also read this file.)
+
+# Apply CSharpier formatting to every script (2026-04-26)
+b3f8d3ed5d100ef387ff77cbd9be000c8f9edf91

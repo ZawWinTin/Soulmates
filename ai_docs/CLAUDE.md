@@ -97,7 +97,7 @@ ai_docs/                      # Human + AI documentation
 ## 5. Running, building, iterating
 
 ### Open the project
-1. Open Unity Hub and add `/Users/zawwintin/Desktop/Projects/Games/Soulmates`.
+1. Open Unity Hub and add `/Users/zawwintin/Developer/Projects/Games/Unity/Soulmates`.
 2. Use Editor version **2022.3.62f3** specifically.
 3. Open `Assets/Scenes/Menu.unity` (or any `LevelNN.unity`) and press Play.
 
@@ -105,7 +105,8 @@ ai_docs/                      # Human + AI documentation
 Both players' controls are defined in `PlayersMovement.inputactions`. Verify the action map (Inspector) for current key bindings — typically WASD for one player, arrow keys for the other.
 
 ### Build
-- Target is presumed Standalone (Mac/Windows). No platform-specific build scripts exist.
+- The shipped target is **WebGL for z-games** (Zaw's games site). How to build, the bridge, and the checks:
+  [Z_GAMES.md](Z_GAMES.md). Standalone (Mac/Windows) builds still work from File → Build Settings.
 
 ### Day-to-day
 - **Most "code" changes happen in the Editor**, not in `.cs` files. Diffs in `.unity`, `.prefab`, `.shadergraph`, `.inputactions`, `.mixer` are real changes — review them.

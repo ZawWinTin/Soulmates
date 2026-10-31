@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
 
     private bool isGameOver = false;
 
-    private float heartAnimationDelay = 2.2f; // long enough for the love-smoke puff to rise + fade
+    private float heartAnimationDelay = 2.9f; // soul braid knots at ~1.1s, then the heart rises + fades
 
     [HideInInspector]
     public bool isLevelCompleted = false;

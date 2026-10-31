@@ -16,6 +16,7 @@ public sealed class GardenReviewCapture : MonoBehaviour
     public static bool Running { get; private set; }
     string output;
     bool retryOnly;
+    bool braidOnly;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
@@ -29,12 +30,19 @@ public sealed class GardenReviewCapture : MonoBehaviour
         var capture = new GameObject("Garden review capture").AddComponent<GardenReviewCapture>();
         capture.output = args[index + 1];
         capture.retryOnly = Array.IndexOf(args, "--retry-review") >= 0;
+        capture.braidOnly = Array.IndexOf(args, "--braid-review") >= 0;
         DontDestroyOnLoad(capture.gameObject);
     }
 
     IEnumerator Start()
     {
         Directory.CreateDirectory(output);
+        if (braidOnly)
+        {
+            yield return BraidFrames();
+            Application.Quit();
+            yield break;
+        }
         if (retryOnly)
         {
             foreach (
@@ -349,6 +357,31 @@ public sealed class GardenReviewCapture : MonoBehaviour
             "Captured desktop and phone layouts and all nine levels; diagonal guard, dual touch input, paused input, keyboard bindings, achievement star slots, delayed fall retry, idle-flip interruption, arrival settling, shared celebration, and reduced motion checked."
         );
         Application.Quit();
+    }
+
+    // Frame-by-frame capture of the soul braid: put Player2 on Player1's tile so they stack, then
+    // save every frame at a fixed 30 fps game clock. braid-focus.txt has the couple's pixel position.
+    IEnumerator BraidFrames()
+    {
+        yield return SceneManager.LoadSceneAsync(1);
+        Screen.SetResolution(1200, 800, false);
+        yield return new WaitForSecondsRealtime(1.5f);
+        var p1 = GameObject.FindGameObjectWithTag("Player1").transform;
+        var p2 = GameObject.FindGameObjectWithTag("Player2").transform;
+        Time.captureFramerate = 30;
+        p2.position = p1.position;
+        File.WriteAllText(
+            Path.Combine(output, "braid-focus.txt"),
+            Camera.main.WorldToScreenPoint(p1.position) + " " + Screen.width + "x" + Screen.height
+        );
+        for (int frame = 0; frame < 84; frame++)
+        {
+            ScreenCapture.CaptureScreenshot(
+                Path.Combine(output, "braid-" + frame.ToString("000") + ".png")
+            );
+            yield return null;
+        }
+        Time.captureFramerate = 0;
     }
 
     IEnumerator Shot(string name)

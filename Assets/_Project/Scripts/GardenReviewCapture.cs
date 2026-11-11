@@ -17,6 +17,7 @@ public sealed class GardenReviewCapture : MonoBehaviour
     string output;
     bool retryOnly;
     bool braidOnly;
+    bool winOnly;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
@@ -31,12 +32,19 @@ public sealed class GardenReviewCapture : MonoBehaviour
         capture.output = args[index + 1];
         capture.retryOnly = Array.IndexOf(args, "--retry-review") >= 0;
         capture.braidOnly = Array.IndexOf(args, "--braid-review") >= 0;
+        capture.winOnly = Array.IndexOf(args, "--win-review") >= 0;
         DontDestroyOnLoad(capture.gameObject);
     }
 
     IEnumerator Start()
     {
         Directory.CreateDirectory(output);
+        if (winOnly)
+        {
+            yield return WinScreens();
+            Application.Quit();
+            yield break;
+        }
         if (braidOnly)
         {
             yield return BraidFrames();
@@ -382,6 +390,27 @@ public sealed class GardenReviewCapture : MonoBehaviour
             yield return null;
         }
         Time.captureFramerate = 0;
+    }
+
+    // The results card with the time star missed (par 0), once with the map star found, once not.
+    IEnumerator WinScreens()
+    {
+        var complete = typeof(GameController).GetMethod(
+            "CompleteLevel",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
+        );
+        foreach (bool found in new[] { true, false })
+        {
+            yield return SceneManager.LoadSceneAsync(1);
+            Screen.SetResolution(1200, 800, false);
+            yield return new WaitForSecondsRealtime(1f);
+            var game = FindObjectOfType<GameController>();
+            game.timeParSeconds = 0f;
+            game.starCollected = found;
+            complete.Invoke(game, null);
+            yield return new WaitForSecondsRealtime(2.5f);
+            yield return Shot(found ? "win-star-slow" : "win-slow");
+        }
     }
 
     IEnumerator Shot(string name)

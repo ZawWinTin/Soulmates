@@ -684,11 +684,14 @@ public sealed class GardenInterface : MonoBehaviour
             new Color(1, 1, 1, .65f)
         );
         float columnW = compact ? statusW : statusW / 2;
+        // Bonus star first, time star second: the same order as the results card.
+        float tx = compact ? 0 : columnW;
+        float ty = compact ? 72 : 0;
         Text(
             status,
             "Time star",
-            0,
-            compact ? 7 : 4,
+            tx,
+            ty + (compact ? 7 : 4),
             columnW,
             18,
             compact ? 10 : 11,
@@ -696,11 +699,11 @@ public sealed class GardenInterface : MonoBehaviour
             true,
             TextAlignmentOptions.Center
         );
-        float meterY = compact ? 28 : 28;
+        float meterY = ty + 28;
         var track = Box(
             status,
             "Candy meter rim",
-            23,
+            tx + 23,
             meterY,
             columnW - 30,
             18,
@@ -723,7 +726,7 @@ public sealed class GardenInterface : MonoBehaviour
             sparkle.sparkleSprite = theme.sparkle;
             sparkle.color = new Color(1, .92f, .55f);
         }
-        var badge = Box(status, "Gold star badge", 2, meterY - 10, 38, 38, Gold);
+        var badge = Box(status, "Gold star badge", tx + 2, meterY - 10, 38, 38, Gold);
         Box(badge, "Badge cream", 2, 2, 34, 34, Paper);
         timeStarIcon = Picture(badge, theme.star, 5, 5, 28, 28);
         var meter = status.gameObject.AddComponent<LevelTimer>();
@@ -733,8 +736,8 @@ public sealed class GardenInterface : MonoBehaviour
         clockLabel = Text(
             status,
             "00:00",
-            compact ? 0 : 43,
-            compact ? 55 : 26,
+            tx + (compact ? 0 : 43),
+            ty + (compact ? 55 : 26),
             compact ? columnW : columnW - 47,
             24,
             compact ? 15 : 13,
@@ -742,8 +745,8 @@ public sealed class GardenInterface : MonoBehaviour
             true,
             TextAlignmentOptions.Center
         );
-        float bx = compact ? 0 : columnW;
-        float by = compact ? 82 : 4;
+        float bx = 0;
+        float by = compact ? 7 : 4;
         Text(
             status,
             "Bonus star",
@@ -1324,17 +1327,18 @@ public sealed class GardenInterface : MonoBehaviour
     {
         int earned = game != null && game.isLevelCompleted ? game.earnedStars : 3;
         bool preview = game == null || !game.isLevelCompleted;
+        // The time star is the hardest, so it comes last: the reveal builds up to it.
         bool[] achievements =
         {
             true,
-            preview || game.timeStarEarned,
             preview || game.starCollected,
+            preview || game.timeStarEarned,
         };
         string[] labels =
         {
             "Together!",
-            achievements[1] ? "Quick hops!" : "Try faster",
-            achievements[2] ? "Star found!" : "Find the star",
+            achievements[1] ? "Star found!" : "Find the star",
+            achievements[2] ? "Quick hops!" : "Try faster",
         };
         float starSize = Mathf.Min(86, (cw - 80) / 3);
         var row = Rect(

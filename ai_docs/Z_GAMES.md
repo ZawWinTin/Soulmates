@@ -49,5 +49,7 @@ Then the checks in hosting-games §5 and commit the new build in z-games ("fix: 
 
 ## Download size
 
-78 MB today (compression Disabled). The fixes (Brotli + headers, 4 uncompressed textures, remove the unused
-HDRP package) are listed in z-games `ai_docs/specs/deployment.md`; target ≤ 60 MB (hosting-games §2).
+54 MB on disk since 2026-11-11 (was 82 MB): the HDRP package is gone and the 4 large Garden textures are
+compressed. Vercel already serves `.wasm`/`.data` with Brotli on the fly, so a player downloads about **29 MB**
+(was ~46 MB). A Unity Brotli build would save only a few MB more, so compression stays Disabled. Details in
+z-games `ai_docs/specs/deployment.md`.

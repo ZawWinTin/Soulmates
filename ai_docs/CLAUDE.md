@@ -23,7 +23,7 @@ Genre: cooperative puzzle-platformer (think *Lovers in a Dangerous Spacetime* me
 | Thing | Version | Notes |
 |---|---|---|
 | Unity Editor | **2022.3.62f3 LTS** | Recently upgraded from 2021.3.37f1. Project also kept on this version to match its sister project The-Lost-Scrolls. |
-| Render pipeline | **URP 14.0.12** (2D Renderer) | HDRP package is also installed but unused — slated for cleanup. |
+| Render pipeline | **URP 14.0.12** (2D Renderer) | The unused HDRP package was removed on 2026-11-11 (it added 15 MB to the web build). |
 | Input | **Unity Input System 1.14.0** | New input system, not legacy `Input.GetKey`. Action map is `Assets/_Project/Scripts/PlayersMovement.inputactions`. |
 | 2D toolchain | **2D Animation 9.2.0**, **PSD Importer 8.1.0**, **Pixel Perfect 5.1.0**, **SpriteShape 9.1.0** | All 2022-LTS versions. |
 | Recorder | **4.0.3** | For capturing gameplay clips. |
@@ -49,7 +49,6 @@ Assets/
 ├── Fonts/                    # TextMesh Pro fonts
 ├── MainMixer.mixer           # Audio mixer (master/SFX/music channels)
 ├── Renderer/                 # URP renderer asset
-├── HDRPDefaultResources/     # ⚠ Unused — URP project, HDRP residue
 ├── Kawaii Slimes/            # ⚠ Third-party sprite pack (in Assets root, not Resources/)
 ├── TextMesh Pro/             # ⚠ TMP runtime resources (Unity-bundled)
 └── UniversalRenderPipelineGlobalSettings.asset
@@ -128,7 +127,8 @@ Both players' controls are defined in `PlayersMovement.inputactions`. Verify the
 | Item | Status | Notes |
 |---|---|---|
 | **`SaveSystem.cs` used `BinaryFormatter`** | Done 2026-10-17 | Saves are JSON (`level.json`). An old `level.pz` is read once, converted, and renamed to `level.pz.migrated`; `SaveSystemTests` covers it. `LoadLegacy` is the only `BinaryFormatter` left; delete it once old saves no longer matter. |
-| **HDRP package & `HDRPDefaultResources/` folder** | Unused, kept | Project uses URP 2D. Consider removing the HDRP package from `Packages/manifest.json` and deleting the folder. |
+| **HDRP package & `HDRPDefaultResources/` folder** | Done 2026-11-11 | Removed (package, folder, its GraphicsSettings entry). Web build 82 → 54 MB with the texture fix below. |
+| **Large Garden art uncompressed** | Done 2026-11-11 | `GardenDesignSetup.LargeArt` (4 PNGs) are compressed; web compression needs sizes in multiples of 4, so those PNGs are padded with transparent pixels (right/top). New big art: same rule, or Unity silently keeps it uncompressed. |
 | **Third-party packs in `Assets/` root** | Cosmetic | `Kawaii Slimes/` and `TextMesh Pro/` should ideally live under `Assets/ThirdParty/` but moving them risks breaking internal references in those packs. Move via Editor only. |
 | **Flat `Scripts/` directory** | Convention gap | 22 files in one folder; group by concern (`Player/`, `UI/`, `Audio/`, `System/`) when it grows. |
 | **No namespaces, no asmdef** | Convention gap | All scripts compile to `Assembly-CSharp`. Same as Lost-Scrolls — recompile times grow with codebase. |

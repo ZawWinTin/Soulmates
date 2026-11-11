@@ -28,7 +28,7 @@ public static class GardenDesignSetup
         importer.mipmapEnabled = false;
         importer.alphaIsTransparency = true;
         importer.maxTextureSize = 2048;
-        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.textureCompression = CompressionFor("pink-expression-sheet.png");
         importer.spritesheet = new[]
         {
             new SpriteMetaData
@@ -225,6 +225,36 @@ public static class GardenDesignSetup
         Debug.Log("[GardenDesignSetup.Install] Garden design installed.");
     }
 
+    // The big art pieces are about 6 MB each uncompressed (a quarter of the web download), so
+    // they're compressed; the small icons stay uncompressed for crisp edges. Web compression (DXT)
+    // needs sizes in multiples of 4, so these PNGs are padded to that with transparent pixels
+    // (right/top, which keeps sprite rects in place), else Unity silently keeps them uncompressed.
+    static readonly string[] LargeArt =
+    {
+        "pink-expression-sheet.png",
+        "soulmates-icon.png",
+        "tutorial-v2.png",
+        "marshmallow-button-v2.png",
+    };
+
+    static TextureImporterCompression CompressionFor(string name) =>
+        LargeArt.Contains(name)
+            ? TextureImporterCompression.CompressedHQ
+            : TextureImporterCompression.Uncompressed;
+
+    // Applies CompressionFor to the large art without re-running Install over the scenes.
+    [MenuItem("Tools/Soulmates/Garden/Compress large art")]
+    public static void CompressLargeArt()
+    {
+        foreach (string name in LargeArt)
+        {
+            var importer = (TextureImporter)AssetImporter.GetAtPath(Art + "/" + name);
+            importer.maxTextureSize = 4096;
+            importer.textureCompression = CompressionFor(name);
+            importer.SaveAndReimport();
+        }
+    }
+
     static Sprite ImportPolishedSprite(string name, bool button)
     {
         string path = Art + "/" + name;
@@ -233,8 +263,8 @@ public static class GardenDesignSetup
         importer.textureType = TextureImporterType.Sprite;
         importer.mipmapEnabled = false;
         importer.alphaIsTransparency = true;
-        importer.maxTextureSize = 2048;
-        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.maxTextureSize = LargeArt.Contains(name) ? 4096 : 2048; // no odd downscale
+        importer.textureCompression = CompressionFor(name);
         importer.filterMode = FilterMode.Bilinear;
         if (button)
         {
